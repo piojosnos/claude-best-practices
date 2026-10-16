@@ -1,5 +1,3 @@
-<!-- Source: best-practices/ in the GetShitDoneContainer repo. Each sandbox gets a fresh copy of this file at every container start, so edits to a copy are lost; change the source, then rebuild the image and restart. -->
-
 # Communication
 
 - Be concrete and brief. When a decision comes up, lead with a short pros/cons and a clear recommendation, not a wall of technical detail or a question loaded with jargon.

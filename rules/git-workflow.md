@@ -1,5 +1,3 @@
-<!-- Source: best-practices/ in the GetShitDoneContainer repo. Each sandbox gets a fresh copy of this file at every container start, so edits to a copy are lost; change the source, then rebuild the image and restart. -->
-
 # Git workflow
 
 These rules cover every change an agent makes. If a project file states a conflicting rule, the stricter rule wins.
