@@ -2,7 +2,6 @@
 name: pr-reply
 description: Read the current pull request's inline review comments, investigate the code behind each, and post a proposed-approach reply threaded under each comment. Propose only; do NOT change code until the user approves. On approval, apply approved fixes as atomic commits. Use when the user says something like "read/answer the PR comments", "reply to each review comment", "triage the PR feedback", or points at a PR's review comments.
 ---
-<!-- Source: best-practices/ in the GetShitDoneContainer repo. Each sandbox gets a fresh copy of this file at every container start, so edits to a copy are lost; change the source, then rebuild the image and restart. -->
 
 # PR review-comment reply workflow
 
