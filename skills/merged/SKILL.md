@@ -137,3 +137,4 @@ Rules:
   `N.2+` feature block) with a subheading per group; keep descriptions concise.
 - Recommend exactly ONE command (for the next phase); do not list every GSD command.
 - Do not start the next phase automatically; the user decides.
+- Test line: this bullet exists only to exercise the skill edit flow.
