@@ -23,6 +23,12 @@ Language-agnostic conventions for new application code.
 - Suffix every collection-typed variable, field, and parameter with its shape: `List<X> xList`, `Set<X> xSet`, `X[] xArray`, `Map<X,Y> xByYMap` (read "x by y").
 - Disambiguate collisions with a prefix (`fooXList` / `barXList`). The suffix tells a reader it is iterable, sized and indexable without chasing the declaration.
 
+## Test fixture naming: abstract over semantic
+
+- In test fixtures (ids, keys, paths, and the local variables derived from them), prefer abstract, numbered names (`tags1`, `tags2`) over semantic ones (`tags`, `places`), unless the explicit name genuinely adds value to that test.
+- Example: prefer `taxos/tags1` and `taxos/tags2` to `taxos/tags` and `taxos/places`; prefer `feeds/a` and `feeds/b` to `feeds/news` and `feeds/photos`.
+- Why: abstract names keep the test about structure, not a particular domain, and avoid implying a meaning the test does not actually assert. A semantic name earns its place only when the test is specifically about that meaning (for example a test that a `drafts` feed is excluded).
+
 ## Blank lines around control flow
 
 Applies to every language. In brace languages it looks like the bullets below; in shell the same goes for `if ... fi`, `for ... done` and `while ... done`.
