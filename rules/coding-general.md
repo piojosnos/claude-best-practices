@@ -76,13 +76,14 @@ Use the project's own scripts and tools for a task the project already solves; n
 
 Why: first-party tools encode project-specific behavior (for example the flags, environment variables or paths a project's test script sets) that a generic tool silently gets wrong.
 
-## Scripting language: Python for logic, shell for glue
+## Scripting language: Python over shell for logic
 
-In tooling projects (container images, host CLIs, test suites), anything with logic is Python, on the host and in the image. Shell is left for thin glue only: an entrypoint or wrapper that sets a few variables and ends in `exec`, and Dockerfile `RUN` lines.
+Write scripts that hold logic in Python, not shell: CLIs, file and folder checks, multi-step scripting, anything that reads or writes JSON or other structured data.
 
-- Logic means: parsing arguments or files (JSON above all), resolving paths, comparing versions, branching on results, retrying, or printing a report.
-- On the host, run Python through `uv` (`#!/usr/bin/env -S uv run --script` with inline metadata), so the Python version and every dependency are pinned and nobody manages a virtualenv. In an image, use the image's own `python3`.
-- Tests of that logic are pytest, not shell harnesses. Drive the real tools (Docker, git) instead of stand-ins.
+- Logic means: parsing arguments or files, resolving paths, comparing versions, branching on results, retrying, or printing a report.
+- Shell stays for thin glue only: a wrapper that sets a few variables and hands off with `exec`, or a one-line build step.
+- Pin the Python version and the dependencies with the project's tooling, so nobody manages an environment by hand.
+- Test that logic with pytest, not shell harnesses.
 - Keep config and state files structured (JSON), not line formats parsed by hand.
 
-Why: shell logic grows into long, fragile scripts that must also stay BSD and GNU portable, and its tests grow larger than the code they test. Python keeps both short, and adding a field to a config file stays a one-line change.
+Why: shell logic grows into long, fragile scripts with portability traps, and its tests outgrow the code. Python keeps both short, and adding a config field stays a one-line change.
