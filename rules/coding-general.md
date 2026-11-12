@@ -75,3 +75,15 @@ Use the project's own scripts and tools for a task the project already solves; n
 - Before substituting an external tool, search for a project one (script folders, tool modules, module READMEs). Fall back only when the search genuinely comes up empty, and say so.
 
 Why: first-party tools encode project-specific behavior (for example the flags, environment variables or paths a project's test script sets) that a generic tool silently gets wrong.
+
+## Scripting language: Python over shell for logic
+
+Write scripts that hold logic in Python, not shell: CLIs, file and folder checks, multi-step scripting, anything that reads or writes JSON or other structured data.
+
+- Logic means: parsing arguments or files, resolving paths, comparing versions, branching on results, retrying, or printing a report.
+- Shell stays for thin glue only: a wrapper that sets a few variables and hands off with `exec`, or a one-line build step.
+- Pin the Python version and the dependencies with the project's tooling, so nobody manages an environment by hand.
+- Test that logic with pytest, not shell harnesses.
+- Keep config and state files structured (JSON), not line formats parsed by hand.
+
+Why: shell logic grows into long, fragile scripts with portability traps, and its tests outgrow the code. Python keeps both short, and adding a config field stays a one-line change.
