@@ -75,3 +75,14 @@ Use the project's own scripts and tools for a task the project already solves; n
 - Before substituting an external tool, search for a project one (script folders, tool modules, module READMEs). Fall back only when the search genuinely comes up empty, and say so.
 
 Why: first-party tools encode project-specific behavior (for example the flags, environment variables or paths a project's test script sets) that a generic tool silently gets wrong.
+
+## Scripting language: Python for logic, shell for glue
+
+In tooling projects (container images, host CLIs, test suites), anything with logic is Python, on the host and in the image. Shell is left for thin glue only: an entrypoint or wrapper that sets a few variables and ends in `exec`, and Dockerfile `RUN` lines.
+
+- Logic means: parsing arguments or files (JSON above all), resolving paths, comparing versions, branching on results, retrying, or printing a report.
+- On the host, run Python through `uv` (`#!/usr/bin/env -S uv run --script` with inline metadata), so the Python version and every dependency are pinned and nobody manages a virtualenv. In an image, use the image's own `python3`.
+- Tests of that logic are pytest, not shell harnesses. Drive the real tools (Docker, git) instead of stand-ins.
+- Keep config and state files structured (JSON), not line formats parsed by hand.
+
+Why: shell logic grows into long, fragile scripts that must also stay BSD and GNU portable, and its tests grow larger than the code they test. Python keeps both short, and adding a field to a config file stays a one-line change.
