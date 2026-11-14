@@ -27,3 +27,16 @@ paths:
 - Factor repeated setup into a named builder that reads at the call site (`newItemInSite(...)`), rather than inline construction copied across tests.
 - Declare a local close to its first use, not in a block at the top of the test.
 - For fixture ids and keys, prefer abstract numbered names over semantic ones (see the test-fixture-naming rule in coding-general).
+
+## Test methods and helpers
+
+- Keep each test method short, so its setup, action and assertion read at a glance. Move complex setup or assertions into named helpers: below the TDL line when one class uses them, in a shared util class when several do.
+- Shared helpers live in static util classes with a private constructor: `Clients` (client creation and cleanup), `Requests` (factory methods for request objects) and `Assertions` (helpers that take a response and the request that produced it).
+- In test code, name a request `req` and its response `res` (`reqList` and `resList` for lists). These extend the sanctioned short forms in coding-general.
+- Each test class declares its own `private static final` fields for clients and APIs. No shared base class: compose helpers instead (see "Composition over inheritance").
+
+## Unit and integration tests
+
+- Unit tests live in the component's own `src/test/java`.
+- Integration tests live in their own `<component>-integ-tests` module. It is skipped by the default build (`skipTests` true) and runs through the project's script.
+- Integration tests run against real infrastructure (see "Testing (every language)" in coding-general). When they write shared data, follow "Test data isolation" in the architecture rules.
