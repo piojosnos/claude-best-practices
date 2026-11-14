@@ -46,3 +46,31 @@ This is the general "prefer imperative over functional-chain style" rule (see co
 ## Imports
 
 - Order: `java`, `javax`, `org`, `com`, then lombok and logging. No wildcard (`.*`) imports; list each type explicitly.
+
+## Types
+
+- No `var`. Declare every local variable with its explicit type.
+- Use a wrapper type (`Long`, `Integer`, `Boolean`) only when `null` is a valid state; use the primitive when the value is always present.
+
+## Fields
+
+- Put each field annotation on its own line above the field, and leave a blank line between fields.
+
+## Utility classes
+
+- A static utility class is `public final`, has a private constructor marked `// no instances` (see "Empty blocks"), and exposes only `public static` methods. No state: every method is a pure function of its arguments.
+
+## Logging
+
+- Log through SLF4J with `@Slf4j`, at the levels in the architecture rules: ERROR for a failure, WARN for something skipped or degraded, INFO for progress, DEBUG for detail.
+
+## Build tooling
+
+- Format with Google Java Format through Spotless, and run Checkstyle, SpotBugs and PMD on every build, bound to the `verify` phase. Keep the project's existing configuration when it has one.
+- Starting configuration for a new project: Checkstyle with `google_checks.xml`, a maximum line length of 160, Javadoc checks off and `failOnViolation=false`; SpotBugs with effort Max, threshold Medium and `EI_EXPOSE_REP` excluded; PMD with the `bestpractices` and `errorprone` rulesets.
+- A module of generated code (an OpenAPI client, for example) skips every formatter and linter.
+
+## Maven modules
+
+- One responsibility per module. Shared infrastructure goes in a `<name>-commons` module, a generated client in `<name>-<service>-client`, integration tests in `<name>-<service>-integ-tests`.
+- A new module is not done until the root POM lists it as a `<module>`.
