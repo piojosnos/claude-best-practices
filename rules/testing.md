@@ -10,6 +10,12 @@ paths:
 
 - A production class has one test class named after it (`Item` -> `ItemTest`, `Site` -> `SiteTest`), not a class per method or per sub-feature.
 - Split a test class only when it grows large; the default is one-to-one.
+- A test class is single-responsibility: it exercises exactly one production class. Do not drive several production classes from one test class, so a failure points at one unit.
+
+## Test your own code, not the library
+
+- Test the behavior your code adds, not behavior a framework or library already guarantees. Do not assert what Jackson, the JDK, or another dependency does on its own (serialization round-trips, collection semantics, parsing); such tests bloat the suite, re-test someone else's code, and break on a library upgrade with no bug of yours.
+- Assert a library's result only where your own logic depends on it, at that boundary, not the library's general behavior.
 
 ## File layout: the TDL split
 
