@@ -58,6 +58,11 @@ Applies to every language. In brace languages it looks like the bullets below; i
 - Extract to a helper at three or more duplicates. Two hand-rolled copies is tolerable; the third should consolidate.
 - Prefer a library already on the classpath over a hand-rolled wrapper (recursive copy, deep-equals, string-join, etc.). If the hand-roll is more than a ~3-line loop, there is probably a library helper; search first. The library version handles the edge cases the hand-roll silently ignores.
 
+## Composition over inheritance
+
+- Default to composition: build behavior by holding and delegating to other types, not by extending them. Inheritance couples a subclass to its parent's implementation and is hard to unpick later.
+- Use inheritance only when the subtype genuinely IS-A the supertype and is substitutable for it everywhere the supertype is used (the Liskov substitution principle): a caller holding the base type must work correctly with any subtype, with no type checks or special-casing. If a subtype would narrow behavior, throw on an inherited method, or need callers to know its concrete type, it does not fit; compose instead.
+
 ## Symmetry
 
 When two things can be implemented the same way, implement them the same way, as long as it makes sense and is not a hack. Symmetry lets a maintainer reason about one thing and apply that to its sibling.
