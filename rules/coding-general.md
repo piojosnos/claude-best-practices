@@ -5,7 +5,7 @@ Language-agnostic conventions for new application code.
 ## Control flow: prefer imperative over functional-chain style
 
 - Default to `if` / `for` / `while` over lambdas and stream or pipeline chains. Reach for a lambda or chain only when there is no clean imperative equivalent.
-- Avoid: a `filter().map().collect()` chain where a `for` loop accumulating into a local list would read more plainly; a deferred-callback form of a plain null-check.
+- Avoid: a `filter().map().collect()` chain where a `for` loop accumulating into a local list would read more plainly; a Python comprehension with nested loops or conditions; a deferred-callback form of a plain null-check.
 - Framework callbacks the framework demands (event handlers, visitor dispatch, template directives) are fine; this rule targets new application code.
 
 ## Braces always
@@ -62,6 +62,47 @@ Applies to every language. In brace languages it looks like the bullets below; i
 
 - Default to composition: build behavior by holding and delegating to other types, not by extending them. Inheritance couples a subclass to its parent's implementation and is hard to unpick later.
 - Use inheritance only when the subtype genuinely IS-A the supertype and is substitutable for it everywhere the supertype is used (the Liskov substitution principle): a caller holding the base type must work correctly with any subtype, with no type checks or special-casing. If a subtype would narrow behavior, throw on an inherited method, or need callers to know its concrete type, it does not fit; compose instead.
+
+## Early return
+
+- Handle edge cases and bad input first, and return or throw at once. The main path then reads at one indentation level instead of inside nested `if` blocks.
+
+## Method design
+
+- Split a method that does several things. The outer method orchestrates and reads as a list of named steps; each private method does one thing.
+- Move each top-level loop of a long method into its own named method.
+- Keep related methods next to each other (`addError()` right below `getErrorList()`).
+- Put a precondition inside the method that needs it, not in every caller. If callers validate and then call, move the validation into the callee.
+- Overloads: the one with fewer parameters calls the one with more and passes the defaults, never the reverse.
+
+## Visibility and coupling
+
+- Keep every member as private as it can be. Widen its scope only when a caller outside needs it.
+- A constant used by one class lives in that class, not in a shared constants file.
+- Generic utils stay generic: a transformation specific to your domain belongs with the domain code, not in a shared utility class.
+- Do not couple unrelated modules through error handling. If a module has no meaningful response to a failure, let it propagate instead of catching and wrapping it to keep it local.
+
+## String methods before regex
+
+- When a plain string method does the job (`startsWith`, `split`, `indexOf`), use it instead of a regex, even if that takes a small helper method. Keep regex for genuine patterns.
+
+## Generated files
+
+- Never hand-edit a generated file. Change its source (spec, template, generator config) and rerun the generator; otherwise the next run silently undoes the edit.
+- The script that generates code for a module lives in that module.
+- Commit generated code the build needs, so the project builds without running the generator.
+
+## Secrets and environment-specific values
+
+- Never hardcode secrets, tokens, credentials or values that belong to one environment (hosts, ports, machine paths). Read them from environment variables or config files, following the project's existing pattern. Never commit a secret value.
+
+## Testing (every language)
+
+- A bug fix starts with a test that reproduces the bug and fails. Then fix the code and watch the test pass.
+- A test asserts something meaningful about behavior. Reject a test that only runs code or asserts something trivially true.
+- Prefer real infrastructure to mocks: run the code against the real database, service or tool where practical. Mock only an external boundary you cannot control (a third-party network service, the clock).
+- Each test starts from a clean state and never depends on another test or on execution order.
+- Commit test fixtures to the repo, so a run is reproducible.
 
 ## Symmetry
 
