@@ -18,10 +18,26 @@ This is the general "prefer imperative over functional-chain style" rule (see co
 - Prefer `if` / `for` / `while` to a `stream().filter().map().collect()` chain and to `Optional` fluent chains.
 - Return `null`, not `Optional<>`, and null-check it with an explicit `if`. An `Optional.orElseThrow(...)` or `orElseGet(...)` with a non-trivial body becomes an `if` with an early return or throw.
 
+## Error handling
+
+- Fail fast: when an input or state is wrong, throw, do not swallow it, log-and-continue, or return a silent default.
+- Throw an unchecked exception. Wrap a caught checked exception in a `RuntimeException` (or a domain subtype where one exists) and always pass the cause: `throw new RuntimeException(message, e)`. Never drop `e`.
+- The message names what failed and the offending value, so the stack trace is self-explanatory: `"unknown renderer: " + key`, not `"invalid input"`.
+
+## Collections: return unmodifiable
+
+- A getter that exposes an internal collection returns an unmodifiable view (`Collections.unmodifiableList(...)` / `List.copyOf(...)`), so a caller cannot mutate internal state through it. This is a sanctioned exception to the Lombok-getter rule: hand-write (or `@Getter(AccessLevel)` plus a wrapper) when the field is a mutable collection.
+
 ## One class per file
 
 - One top-level type per file. Do not nest a `private static class` or a helper `enum` inside another class.
 - An `enum` or a `record` is a type in its own right: give it its own file, named after it.
+
+## Empty blocks
+
+- Every intentionally-empty block carries a marker comment so a reader knows the emptiness is deliberate, not an unfinished edit: a method or override body, a constructor, an empty class, interface, or record body.
+- Use `// no instances` for a private no-arg constructor that exists only to block instantiation of a static utility class; use `// empty` for every other intentionally-empty block.
+- Exempt: inline braces that are not blocks, such as an array initializer (`int[] xArray = {}`).
 
 ## Separators between members
 
@@ -30,11 +46,3 @@ This is the general "prefer imperative over functional-chain style" rule (see co
 ## Imports
 
 - Order: `java`, `javax`, `org`, `com`, then lombok and logging. No wildcard (`.*`) imports; list each type explicitly.
-
-## Non-instantiable classes
-
-- A utility class with only static members gets a `private` no-arg constructor marked `// no instances`, so it cannot be instantiated and the intent is explicit.
-
-## Test file layout
-
-- Split a test class with a `// TDL` banner line: `@Test` methods above it, builders and helper utilities below it. A reader scans the behavior first and drops into the scaffolding only when needed.
