@@ -14,3 +14,8 @@
 - Surface deferred work explicitly and offer to add it to the roadmap.
 - In discussion phases, present each option in prose with a recommendation and let the user reply in text. Use the AskUserQuestion picker only when the choices are settled and simple.
 - Keep explanations jargon-light; when a term is dense, define it plainly.
+
+## Constraints and destructive actions
+
+- Never improvise an alternative without approval. When the agreed approach hits a constraint, stop, explain the constraint, present the options with a recommendation, and wait for a decision.
+- Before a destructive or irreversible action (deleting files or branches, force-pushing, dropping data), list exactly what it affects and wait for an explicit go. A question like "which of these can be deleted?" asks for an answer, not for the deletion.
