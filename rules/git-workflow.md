@@ -31,7 +31,6 @@ If work has accidentally landed directly on the target or integration branch, fi
 - `git add` and `git commit` on a feature branch are fine without asking. Write a clear conventional message with no AI attribution. The user may amend or squash.
 - Do not `git add -A` when untracked scratch or build dirs are present; stage explicit paths.
 - Before pushing to a branch that has a PR, check the PR's state. If it is already merged or closed, do not push there: cut a new branch from the updated target and open a new PR.
-- One concern per PR. When you find something else that needs fixing, note it and do it on its own branch. A PR description says what changed and why, not just which files.
 - Do not start coding unprompted. Unless you are executing an already-agreed plan, propose the approach and wait for an explicit go, especially for big changes. A one-line fix that was just asked for is fine; anything with design choices needs the round trip.
 
 ## PR review comments
