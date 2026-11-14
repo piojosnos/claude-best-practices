@@ -32,16 +32,12 @@ Language-agnostic design rules for services and multi-module systems.
 
 ## Containers
 
-- Package each service as a container image. Run a multi-container setup with Docker Compose.
+- Package each service as a container image. How the containers run together (Docker Compose, Kubernetes or another platform) is a design decision for each project; agree on it with the user.
 
 ## Logging levels
 
 - ERROR: a failure. WARN: something skipped or degraded. INFO: progress. DEBUG: detail.
 - Log through the language's standard facility (SLF4J in Java, `logging` in Python), with enough context in the message to find the record or file involved.
-
-## One name per service
-
-- A service uses one short name everywhere: folder, module, container, Compose service, application name, config keys, dashboards and metric tags. Grepping that one word then finds every piece of it.
 
 ## Test data isolation
 
