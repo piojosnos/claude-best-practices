@@ -36,13 +36,10 @@ Applies to Spring Boot services, on top of the Java rules.
 - When create and update set the same fields, they share one population method.
 - Group entity fields under section comments: `// Id` first, then the domain fields, then `// Relationships` last.
 
-## Services
-
-- An upsert returns a result exposing `entity()` and `wasCreated()`. The controller answers `201 Created` when `wasCreated()` is true and `200 OK` otherwise.
-
 ## Paths and filters
 
 - Endpoints live under `/api/<resource>`, with the resource as a kebab-case plural noun (`/api/basic-events`).
+- Add a version segment (`/api/v1/<resource>`) when the API has consumers you cannot release together with the service, such as other teams or public clients. An API whose only clients are built and released with it stays unversioned until that changes.
 - Servlet filters skip non-API paths (`/actuator`, `/swagger`, `/v3/api-docs`) in `shouldNotFilter`. Metrics interceptors skip the same paths.
 
 ## Persistence
