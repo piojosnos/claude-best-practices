@@ -15,6 +15,22 @@ paths:
 - Module-level constants sit at the top of the module, in `UPPER_SNAKE_CASE`.
 - Log through the `logging` module, with context in the message (record id, file name, counts). `print` is only for a CLI's real output.
 
+## Module layout
+
+- Put a banner before each logical section of a module, in the same shape as shell scripts: a rule line is `#`, a space and 80 hyphens (82 columns). The title says what the section holds. An optional why of at most two lines sits under the title, closed by a third rule line. Without a why, the title sits between two rules.
+
+  ```python
+  # --------------------------------------------------------------------------------
+  # Checks of the state folders
+  # --------------------------------------------------------------------------------
+  # A root-owned folder here breaks the agent's next write.
+  # --------------------------------------------------------------------------------
+  ```
+
+- A section groups related functions (one topic, one public function and its private helpers). A function does not get its own banner; its name already says what it does.
+- The module header uses the same shape: the purpose is the title.
+- A module with an entry point ends with a `Main / Entry Point` banner over the `if __name__ == "__main__":` block.
+
 ## Project layout
 
 - Business logic lives in modules. The entry point (a declared script or an `if __name__ == "__main__":` block) stays thin and calls into them.
