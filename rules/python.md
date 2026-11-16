@@ -17,14 +17,14 @@ paths:
 
 ## Module layout
 
-- Put a banner before each logical section of a module, in the same shape as shell scripts: a rule line is `#`, a space and 78 hyphens (80 columns). The title says what the section holds. An optional why of at most two lines sits under the title, closed by a third rule line. Without a why, the title sits between two rules.
+- Put a banner before each logical section of a module, in the same shape as shell scripts: a rule line is `#`, a space and 80 hyphens (82 columns). The title says what the section holds. An optional why of at most two lines sits under the title, closed by a third rule line. Without a why, the title sits between two rules.
 
   ```python
-  # ------------------------------------------------------------------------------
+  # --------------------------------------------------------------------------------
   # Checks of the state folders
-  # ------------------------------------------------------------------------------
+  # --------------------------------------------------------------------------------
   # A root-owned folder here breaks the agent's next write.
-  # ------------------------------------------------------------------------------
+  # --------------------------------------------------------------------------------
   ```
 
 - A section groups related functions (one topic, one public function and its private helpers). A function does not get its own banner; its name already says what it does.
