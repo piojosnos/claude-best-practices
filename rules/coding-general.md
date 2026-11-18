@@ -112,6 +112,7 @@ When two things can be implemented the same way, implement them the same way, as
 - Flag honest asymmetries explicitly and justify them by a genuine difference between the two things (a bounded card needs a layout wrapper that an unbounded page does not). Do not force symmetry onto things that only look similar.
 - Align names with what they represent: if `UserService` has `findById`, the sibling `OrderService` gets `findById`, not `getOrder`, so a name strongly reflects its target.
 - When symmetry fixes keep surfacing inconsistent names, propose a wider naming audit.
+- Keep parameter order consistent. When several functions take parameters of the same kinds, take them in the same order everywhere, so a caller never has to check which comes first. When functions take many similar parameters, put the most common ones first and the rarer ones last.
 
 ## First-party tooling
 
