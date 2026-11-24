@@ -11,6 +11,7 @@ from practices.cli import REPO_DIR
 from practices.reader import read_masters
 from practices.render import render_all
 
+
 EXPECTED_CURSOR_RULE_A = (
     "---\n"
     "alwaysApply: true\n"

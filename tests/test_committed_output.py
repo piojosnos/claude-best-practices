@@ -10,6 +10,7 @@ from practices.cli import REPO_DIR
 from practices.reader import read_masters
 from practices.render import render_all
 
+
 GENERATED_FOLDER = "generated"
 AGENT_NAME_LIST = ["claude", "cursor"]
 
@@ -57,7 +58,7 @@ def test_committed_output_has_no_drift() -> None:
 # The update skill
 # --------------------------------------------------------------------------------
 
-def test_update_practice_skill_reads_and_names_the_generate_and_check_commands() -> None:
+def test_update_practice_skill_reads_and_names_the_generate_and_gate_commands() -> None:
     skill_by_name_map = {}
 
     for skill in read_masters(REPO_DIR).skill_list:
@@ -68,7 +69,7 @@ def test_update_practice_skill_reads_and_names_the_generate_and_check_commands()
     body = skill_by_name_map["update-practice"].body
 
     assert "uv run --locked python -m practices.generate" in body
-    assert "uv run --locked python -m practices.check" in body
+    assert "uv run --locked python -m practices.gate" in body
 
     for agent_name in AGENT_NAME_LIST:
         skill_file = REPO_DIR / GENERATED_FOLDER / agent_name / "skills" / "update-practice" / "SKILL.md"

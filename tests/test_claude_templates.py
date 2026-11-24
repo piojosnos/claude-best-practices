@@ -13,6 +13,7 @@ from practices.model import Rule
 from practices.reader import read_masters
 from practices.render import render_all
 
+
 EXPECTED_CLAUDE_RULE_A = (
     "<!-- GENERATED from rules/a.md; edit that file and regenerate -->\n"
     "\n"

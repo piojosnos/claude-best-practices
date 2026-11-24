@@ -13,6 +13,7 @@ from practices.cli import PracticesError
 from practices.model import ExtraFile, Rule, Skill
 from practices.reader import read_masters
 
+
 BROKEN_RULE_MASTER_LIST = [
     (
         '---\npath:\n  - "**/*.x1"\n---\n\n# X1\n\nText x1.\n',
@@ -76,7 +77,8 @@ BROKEN_SKILL_MASTER_LIST = [
     (
         "x1",
         "---\nname: x1\ndescription: d1\nlicense: l1\n---\n\n# X1\n\nText x1.\n",
-        "skills/x1/SKILL.md: unknown frontmatter key 'license'; a skill allows only: description, disable-model-invocation, name",
+        "skills/x1/SKILL.md: unknown frontmatter key 'license'; "
+        "a skill allows only: description, disable-model-invocation, name",
     ),
     (
         "x1",

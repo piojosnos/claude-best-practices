@@ -28,9 +28,10 @@ Run from the clone root:
 
 ```text
 uv run --locked python -m practices.generate   # render the masters into generated/
-uv run --locked python -m practices.check      # fail if generated/ differs from the masters
-uv run --locked pytest -q                      # the test suite
+uv run --locked python -m practices.gate       # the gate: ruff, the drift check, then pytest
 ```
+
+The gate stops at the first failing step. `uv run --locked python -m practices.check` fails if `generated/` differs from the masters, and `uv run --locked pytest -q` runs the tests; both also run alone.
 
 `uv` keeps its environment in `.venv/`, which git ignores. A checkout shared by two operating systems should run the commands on one of them only.
 

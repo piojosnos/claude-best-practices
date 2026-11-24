@@ -33,8 +33,8 @@ merges.
 
 4. Regenerate: `uv run --locked python -m practices.generate`.
 
-5. Check: `uv run --locked python -m practices.check` and `uv run --locked pytest -q`.
-   Fix the master, never the output, until both pass.
+5. Run the gate: `uv run --locked python -m practices.gate`. It runs the linter, the
+   drift check and the tests. Fix the master, never the output, until it passes.
 
 6. Commit the master and its generated output together. Stage explicit paths (the
    master and `generated`), never `git add -A`. Use a conventional message with no AI

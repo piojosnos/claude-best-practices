@@ -8,6 +8,7 @@ from pathlib import Path
 
 from practices.cli import REPO_DIR
 
+
 FORBIDDEN_TEXT_LIST = [
     ".claude/",
     "~/.claude",

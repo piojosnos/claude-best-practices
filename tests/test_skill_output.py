@@ -13,6 +13,7 @@ from practices import generate
 from practices.cli import REPO_DIR
 from practices.render import render_all
 
+
 AGENT_NAME_LIST = ["claude", "cursor"]
 EXPECTED_SKILL_A = (
     "---\n"
