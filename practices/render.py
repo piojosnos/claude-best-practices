@@ -13,7 +13,7 @@ import jinja2
 from practices.errors import PracticesError
 from practices.model import Masters, OutputFile, Rule, Skill
 from practices.profiles import AGENT_PROFILE_LIST, AgentProfile
-from practices.reader import SKILL_FILE_NAME
+from practices.skill_reader import SKILL_FILE_NAME
 
 
 # --------------------------------------------------------------------------------

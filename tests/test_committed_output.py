@@ -11,7 +11,8 @@ from practices.check import find_drift
 from practices.cli import REPO_DIR
 from practices.output import GENERATED_FOLDER
 from practices.profiles import AGENT_PROFILE_LIST
-from practices.reader import SKILL_FILE_NAME, read_masters
+from practices.reader import read_masters
+from practices.skill_reader import SKILL_FILE_NAME
 from tests.helpers import render_repo
 
 
