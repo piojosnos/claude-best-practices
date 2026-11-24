@@ -14,6 +14,8 @@ from practices.model import ExtraFile, Rule, Skill
 from practices.reader import read_masters
 
 
+GLOB_SHAPE_TEXT = "has a control character or a space at an end; write a plain glob"
+
 BROKEN_RULE_MASTER_LIST = [
     (
         '---\npath:\n  - "**/*.x1"\n---\n\n# X1\n\nText x1.\n',
@@ -42,6 +44,22 @@ BROKEN_RULE_MASTER_LIST = [
     (
         '---\npaths:\n  - "**/*.{x1,x2}"\n---\n\n# X1\n\nText x1.\n',
         "rules/x1.md: the glob '**/*.{x1,x2}' holds a comma; write one glob per entry",
+    ),
+    (
+        '---\npaths:\n  - "a\\nalwaysApply: true"\n---\n\n# X1\n\nText x1.\n',
+        "rules/x1.md: the glob 'a\\nalwaysApply: true' " + GLOB_SHAPE_TEXT,
+    ),
+    (
+        '---\npaths:\n  - " **/*.x1"\n---\n\n# X1\n\nText x1.\n',
+        "rules/x1.md: the glob ' **/*.x1' " + GLOB_SHAPE_TEXT,
+    ),
+    (
+        '---\npaths:\n  - "**/*.x1 "\n---\n\n# X1\n\nText x1.\n',
+        "rules/x1.md: the glob '**/*.x1 ' " + GLOB_SHAPE_TEXT,
+    ),
+    (
+        '---\npaths:\n  - "a\\x85b"\n---\n\n# X1\n\nText x1.\n',
+        "rules/x1.md: the glob 'a\\x85b' " + GLOB_SHAPE_TEXT,
     ),
     (
         "---\npaths: [unclosed\n---\n\n# X1\n\nText x1.\n",

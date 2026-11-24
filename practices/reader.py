@@ -135,6 +135,11 @@ def _check_path_list(path_list: object, master_path: str) -> list[str]:
                 f"{master_path}: the glob '{glob}' holds a comma; write one glob per entry"
             )
 
+        if glob != glob.strip() or not glob.isprintable():
+            raise PracticesError(
+                f"{master_path}: the glob {glob!r} has a control character or a space at an end; write a plain glob"
+            )
+
     return list(path_list)
 
 
