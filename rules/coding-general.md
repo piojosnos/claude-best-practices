@@ -27,7 +27,7 @@ Language-agnostic conventions for new application code.
 
 - In test fixtures (ids, keys, paths, and the local variables derived from them), prefer abstract, numbered names (`tags1`, `tags2`) over semantic ones (`tags`, `places`), unless the explicit name genuinely adds value to that test.
 - Example: prefer `taxos/tags1` and `taxos/tags2` to `taxos/tags` and `taxos/places`; prefer `feeds/a` and `feeds/b` to `feeds/news` and `feeds/photos`.
-- Why: abstract names keep the test about structure, not a particular domain, and avoid implying a meaning the test does not actually assert. A semantic name earns its place only when the test is specifically about that meaning (for example a test that a `drafts` feed is excluded).
+- A semantic name earns its place only when the test is about that meaning (for example a test that a `drafts` feed is excluded).
 
 ## Blank lines around control flow
 
@@ -71,6 +71,7 @@ Applies to every language. In brace languages it looks like the bullets below; i
 
 - Split a method that does several things. The outer method orchestrates and reads as a list of named steps; each private method does one thing.
 - Move each top-level loop of a long method into its own named method.
+- Order members top-down: the public entry methods first, then each private method below its first caller, in the order the caller uses them. The file reads like the outer method's list of steps, from overview to detail.
 - Keep related methods next to each other (`addError()` right below `getErrorList()`).
 - Put a precondition inside the method that needs it, not in every caller. If callers validate and then call, move the validation into the callee.
 - Overloads: the one with fewer parameters calls the one with more and passes the defaults, never the reverse.
@@ -92,6 +93,11 @@ Applies to every language. In brace languages it looks like the bullets below; i
 - The script that generates code for a module lives in that module.
 - Commit generated code the build needs, so the project builds without running the generator.
 
+## Linters
+
+- Every language in a project gets a linter, and it runs as part of the normal build or test command, so a finding fails like a failing test. The language rules say where and how.
+- Generated code is never linted; it is never hand-edited either.
+
 ## Secrets and environment-specific values
 
 - Never hardcode secrets, tokens, credentials or values that belong to one environment (hosts, ports, machine paths). Read them from environment variables or config files, following the project's existing pattern. Never commit a secret value.
@@ -99,10 +105,31 @@ Applies to every language. In brace languages it looks like the bullets below; i
 ## Testing (every language)
 
 - A bug fix starts with a test that reproduces the bug and fails. Then fix the code and watch the test pass.
+- New behavior ships with its tests, planned as part of the work, not added afterwards.
 - A test asserts something meaningful about behavior. Reject a test that only runs code or asserts something trivially true.
 - Prefer real infrastructure to mocks: run the code against the real database, service or tool where practical. Mock only an external boundary you cannot control (a third-party network service, the clock).
 - Each test starts from a clean state and never depends on another test or on execution order.
 - Commit test fixtures to the repo, so a run is reproducible.
+
+### Keep the suite small and plain
+
+- Every test earns its place: it would catch a plausible regression in code the project owns. Skip scenarios that are extremely unlikely, near-duplicate variants of a check already made, and behavior that is obviously true.
+- Never test a framework or library, directly or through your own code. Assert a library's result only where your logic depends on it.
+- One clear test per behavior. Use a table of inputs only when the inputs really lead to different outcomes.
+- Keep a test plain: setup, action, assertion. Add a helper only when several tests share it.
+- When the list of possible tests is long, propose the short list and let the user add more, rather than writing them all.
+
+### Logging
+
+- Do not test logging. Test a log line only when the feature itself is about that line (an audit entry, a trace id the logs must carry). Then assert that one line, never every line around it.
+
+Why: log wording changes freely.
+
+### Test file layout: the TDL split
+
+- Every test file, in any language, has the tests first, then a `TDL` banner, then the helpers (builders, request factories, assertion helpers, finders, stub handlers).
+- Frame the banner with the language's separator rule on its own line above and below it: `// TDL` between two `// ---` rules in Java, `# TDL` between two `# ---` rules in Python.
+- Module constants stay at the top. A file that holds only fixtures (for example `conftest.py`) needs no split.
 
 ## Symmetry
 
@@ -133,4 +160,4 @@ Write scripts that hold logic in Python, not shell: CLIs, file and folder checks
 - Test that logic with pytest, not shell harnesses.
 - Keep config and state files structured (JSON), not line formats parsed by hand.
 
-Why: shell logic grows into long, fragile scripts with portability traps, and its tests outgrow the code. Python keeps both short, and adding a config field stays a one-line change.
+Why: shell logic grows into long, fragile scripts whose tests outgrow the code.

@@ -13,8 +13,6 @@ This is the process for **every** change, with no exceptions:
 5. **Open a PR from the new branch against the target branch** it was cut from (`gh pr create --base <target> --head <new-branch>`). The base MUST be the same branch you branched from in step 3.
 6. **The human merges the PR** from the GitHub UI after review. Agents never merge (`gh pr merge` and equivalents are forbidden).
 
-Why: the target branch always stays clean and equal to its remote, so it is reviewable and reversible at any time; every change arrives as an isolated, reviewable PR against the exact branch it targets.
-
 ### Corollary: keep integration branches clean
 
 If work has accidentally landed directly on the target or integration branch, fix it before doing anything else:
@@ -37,10 +35,9 @@ If work has accidentally landed directly on the target or integration branch, fi
 - Always pass `--paginate` to `gh api` when fetching `pulls/{n}/comments` and `pulls/{n}/reviews`. Without it only the first page (about 30 items) comes back and newer comments are silently dropped.
 - Reconcile the full set: group by `in_reply_to_id` and take the latest comment per thread. Never time-filter a first page when the thread count may exceed 30.
 
-Why: a missed second page leads to telling the user "no new comments" when there are some, which erodes trust.
-
 ## GSD workflow
 
 - Phase work runs through the GSD skills (`/gsd-execute-phase`, etc.). The `.planning/` tree is the working surface.
 - Internal phase and decision IDs must not leak into committed source, fixtures, or READMEs.
+- Keep planning apart from code: changes to `.planning/`, changes to the agent's own config folder in the repo, and code changes each go on their own branch and PR, never mixed.
 - `/gsd-ship` and `/gsd-pr-branch` do not cleanly handle a non-default target branch. For phased work that targets an integration branch, push (with approval) and open the PR by hand with `gh pr create --base <target>`.
