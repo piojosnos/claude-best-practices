@@ -35,14 +35,14 @@ def test_check_without_generated_names_every_expected_file_as_missing(fixture_re
 # --------------------------------------------------------------------------------
 
 def test_check_with_a_broken_master_prints_the_reader_message(fixture_repo: Path, capsys) -> None:
-    (fixture_repo / "rules" / "a.md").write_text("---\npath: x\n---\n\n# A1\n\nText a1.\n")
+    (fixture_repo / "rules" / "bp-a.md").write_text("---\npath: x\n---\n\n# A1\n\nText a1.\n")
 
     assert check.main([], fixture_repo) == 1
 
     captured = capsys.readouterr()
 
     assert captured.out == ""
-    assert "rules/a.md: unknown frontmatter key 'path'" in captured.err
+    assert "rules/bp-a.md: unknown frontmatter key 'path'" in captured.err
 
 
 # --------------------------------------------------------------------------------

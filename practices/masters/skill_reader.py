@@ -10,7 +10,7 @@ from pathlib import Path
 from practices.error.practices_error import PracticesError
 from practices.filesystem.file_mode import is_executable
 from practices.masters.frontmatter_parser import check_keys, split_frontmatter
-from practices.masters.master_file import read_text, refuse_link
+from practices.masters.master_file import check_name_prefix, read_text, refuse_link
 from practices.masters.masters_model import ExtraFile, Skill
 
 
@@ -118,6 +118,8 @@ def _check_name(name: object, folder_name: str, master_path: str) -> None:
             f"lowercase letters and digits in words joined by single hyphens, "
             f"at most {_MAX_SKILL_NAME_LENGTH} characters"
         )
+
+    check_name_prefix(folder_name, master_path)
 
 
 # --------------------------------------------------------------------------------

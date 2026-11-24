@@ -18,7 +18,7 @@ from tests.helpers import render_repo, write_master, write_skill
 
 AGENT_NAME_LIST = ["claude", "cursor"]
 EXPECTED_CLAUDE_RULE_A = (
-    "<!-- GENERATED from rules/a.md; edit that file and regenerate -->\n"
+    "<!-- GENERATED from rules/bp-a.md; edit that file and regenerate -->\n"
     "\n"
     "# A1\n"
     "\n"
@@ -30,7 +30,7 @@ EXPECTED_CLAUDE_RULE_B = (
     '  - "**/*.b1"\n'
     '  - "**/b2*.txt"\n'
     "---\n"
-    "<!-- GENERATED from rules/b.md; edit that file and regenerate -->\n"
+    "<!-- GENERATED from rules/bp-b.md; edit that file and regenerate -->\n"
     "\n"
     "# B1\n"
     "\n"
@@ -40,7 +40,7 @@ EXPECTED_CURSOR_RULE_A = (
     "---\n"
     "alwaysApply: true\n"
     "---\n"
-    "<!-- GENERATED from rules/a.md; edit that file and regenerate -->\n"
+    "<!-- GENERATED from rules/bp-a.md; edit that file and regenerate -->\n"
     "\n"
     "# A1\n"
     "\n"
@@ -51,7 +51,7 @@ EXPECTED_CURSOR_RULE_B = (
     "globs: **/*.b1, **/b2*.txt\n"
     "alwaysApply: false\n"
     "---\n"
-    "<!-- GENERATED from rules/b.md; edit that file and regenerate -->\n"
+    "<!-- GENERATED from rules/bp-b.md; edit that file and regenerate -->\n"
     "\n"
     "# B1\n"
     "\n"
@@ -59,10 +59,10 @@ EXPECTED_CURSOR_RULE_B = (
 )
 EXPECTED_SKILL_A = (
     "---\n"
-    'name: "a"\n'
+    'name: "bp-a"\n'
     'description: "Skill a1 does \\"a1\\" work. Use when a1."\n'
     "---\n"
-    "<!-- GENERATED from skills/a/SKILL.md; edit that file and regenerate -->\n"
+    "<!-- GENERATED from skills/bp-a/SKILL.md; edit that file and regenerate -->\n"
     "\n"
     "# A1 workflow\n"
     "\n"
@@ -76,13 +76,13 @@ JINJA_BODY_LINE = "Use {{ x1 }} and {% if y1 %}z1{% endif %}."
 # --------------------------------------------------------------------------------
 
 def test_claude_rule_without_paths_is_the_header_and_the_body(fixture_repo: Path) -> None:
-    assert _output_text(fixture_repo, "claude/rules/a.md") == EXPECTED_CLAUDE_RULE_A
+    assert _output_text(fixture_repo, "claude/rules/bp-a.md") == EXPECTED_CLAUDE_RULE_A
 
 
 # --------------------------------------------------------------------------------
 
 def test_claude_rule_with_paths_keeps_a_quoted_paths_list_before_the_header(fixture_repo: Path) -> None:
-    assert _output_text(fixture_repo, "claude/rules/b.md") == EXPECTED_CLAUDE_RULE_B
+    assert _output_text(fixture_repo, "claude/rules/bp-b.md") == EXPECTED_CLAUDE_RULE_B
 
 
 # --------------------------------------------------------------------------------
@@ -90,9 +90,9 @@ def test_claude_rule_with_paths_keeps_a_quoted_paths_list_before_the_header(fixt
 def test_a_glob_with_a_hash_and_a_quote_survives_the_yaml_round_trip(fixture_repo: Path) -> None:
     glob = "**/#1'x.txt"
 
-    write_master(fixture_repo, "h1.md", f'---\npaths:\n  - "{glob}"\n---\n\n# H1\n\nText h1.\n')
+    write_master(fixture_repo, "bp-h1.md", f'---\npaths:\n  - "{glob}"\n---\n\n# H1\n\nText h1.\n')
 
-    frontmatter_map, _ = _split_output(_output_text(fixture_repo, "claude/rules/h1.md"))
+    frontmatter_map, _ = _split_output(_output_text(fixture_repo, "claude/rules/bp-h1.md"))
 
     assert frontmatter_map == {"paths": [glob]}
 
@@ -100,11 +100,11 @@ def test_a_glob_with_a_hash_and_a_quote_survives_the_yaml_round_trip(fixture_rep
 # --------------------------------------------------------------------------------
 
 def test_jinja_syntax_in_a_master_body_renders_literally(fixture_repo: Path) -> None:
-    write_master(fixture_repo, "l1.md", f"# L1\n\n{JINJA_BODY_LINE}\n")
+    write_master(fixture_repo, "bp-l1.md", f"# L1\n\n{JINJA_BODY_LINE}\n")
     generated_file_by_path_map = render_repo(fixture_repo)
 
-    assert JINJA_BODY_LINE in generated_file_by_path_map["claude/rules/l1.md"].content.decode("utf-8").split("\n")
-    assert JINJA_BODY_LINE in generated_file_by_path_map["cursor/rules/l1.mdc"].content.decode("utf-8").split("\n")
+    assert JINJA_BODY_LINE in generated_file_by_path_map["claude/rules/bp-l1.md"].content.decode("utf-8").split("\n")
+    assert JINJA_BODY_LINE in generated_file_by_path_map["cursor/rules/bp-l1.mdc"].content.decode("utf-8").split("\n")
 
 
 # --------------------------------------------------------------------------------
@@ -133,13 +133,13 @@ def test_every_output_ends_with_exactly_one_newline(fixture_repo: Path) -> None:
 # --------------------------------------------------------------------------------
 
 def test_output_keys_are_sorted_whatever_the_creation_order(fixture_repo: Path) -> None:
-    write_master(fixture_repo, "z1.md", "# R1\n\nText r1.\n")
-    write_master(fixture_repo, "c1.md", "# R1\n\nText r1.\n")
+    write_master(fixture_repo, "bp-z1.md", "# R1\n\nText r1.\n")
+    write_master(fixture_repo, "bp-c1.md", "# R1\n\nText r1.\n")
 
     output_path_list = list(render_repo(fixture_repo))
 
     assert output_path_list == sorted(output_path_list)
-    assert "claude/rules/c1.md" in output_path_list
+    assert "claude/rules/bp-c1.md" in output_path_list
 
 
 # --------------------------------------------------------------------------------
@@ -150,13 +150,13 @@ def test_output_keys_are_sorted_whatever_the_creation_order(fixture_repo: Path) 
 # --------------------------------------------------------------------------------
 
 def test_cursor_rule_without_paths_is_always_apply(fixture_repo: Path) -> None:
-    assert _output_text(fixture_repo, "cursor/rules/a.mdc") == EXPECTED_CURSOR_RULE_A
+    assert _output_text(fixture_repo, "cursor/rules/bp-a.mdc") == EXPECTED_CURSOR_RULE_A
 
 
 # --------------------------------------------------------------------------------
 
 def test_cursor_rule_with_paths_joins_the_globs_and_is_not_always_apply(fixture_repo: Path) -> None:
-    assert _output_text(fixture_repo, "cursor/rules/b.mdc") == EXPECTED_CURSOR_RULE_B
+    assert _output_text(fixture_repo, "cursor/rules/bp-b.mdc") == EXPECTED_CURSOR_RULE_B
 
 
 # --------------------------------------------------------------------------------
@@ -189,27 +189,16 @@ def test_every_real_master_has_its_globs_and_always_apply_lines() -> None:
 
 @pytest.mark.parametrize("agent_name", AGENT_NAME_LIST)
 def test_the_skill_file_is_the_frontmatter_the_header_and_the_body(fixture_repo: Path, agent_name: str) -> None:
-    assert _output_text(fixture_repo, f"{agent_name}/skills/a/SKILL.md") == EXPECTED_SKILL_A
+    assert _output_text(fixture_repo, f"{agent_name}/skills/bp-a/SKILL.md") == EXPECTED_SKILL_A
 
 
 # --------------------------------------------------------------------------------
 
 @pytest.mark.parametrize("agent_name", AGENT_NAME_LIST)
 def test_the_skill_frontmatter_round_trips_through_yaml(fixture_repo: Path, agent_name: str) -> None:
-    frontmatter_map = _frontmatter_map(_output_text(fixture_repo, f"{agent_name}/skills/a/SKILL.md"))
+    frontmatter_map = _frontmatter_map(_output_text(fixture_repo, f"{agent_name}/skills/bp-a/SKILL.md"))
 
-    assert frontmatter_map == {"name": "a", "description": 'Skill a1 does "a1" work. Use when a1.'}
-
-
-# --------------------------------------------------------------------------------
-
-@pytest.mark.parametrize("agent_name", AGENT_NAME_LIST)
-def test_a_numeric_skill_name_stays_a_string_in_the_output(fixture_repo: Path, agent_name: str) -> None:
-    write_skill(fixture_repo, "123", '---\nname: "123"\ndescription: d1\n---\n\n# N1\n\nText n1.\n')
-
-    output_text = _output_text(fixture_repo, f"{agent_name}/skills/123/SKILL.md")
-
-    assert _frontmatter_map(output_text)["name"] == "123"
+    assert frontmatter_map == {"name": "bp-a", "description": 'Skill a1 does "a1" work. Use when a1.'}
 
 
 # --------------------------------------------------------------------------------
@@ -220,11 +209,11 @@ def test_a_description_with_odd_characters_survives_the_yaml_round_trip(fixture_
 
     write_skill(
         fixture_repo,
-        "x1",
-        '---\nname: x1\ndescription: "a\\x85b\\x7fc\\u2028d\\u00a0e\\U0001f600f"\n---\n\n# X1\n\nText x1.\n',
+        "bp-x1",
+        '---\nname: bp-x1\ndescription: "a\\x85b\\x7fc\\u2028d\\u00a0e\\U0001f600f"\n---\n\n# X1\n\nText x1.\n',
     )
 
-    output_text = _output_text(fixture_repo, f"{agent_name}/skills/x1/SKILL.md")
+    output_text = _output_text(fixture_repo, f"{agent_name}/skills/bp-x1/SKILL.md")
 
     assert _frontmatter_map(output_text)["description"] == description
 
@@ -233,7 +222,7 @@ def test_a_description_with_odd_characters_survives_the_yaml_round_trip(fixture_
 
 @pytest.mark.parametrize("agent_name", AGENT_NAME_LIST)
 def test_an_extra_file_is_copied_byte_for_byte_without_a_header(fixture_repo: Path, agent_name: str) -> None:
-    generated_file = render_repo(fixture_repo)[f"{agent_name}/skills/a/extra1.txt"]
+    generated_file = render_repo(fixture_repo)[f"{agent_name}/skills/bp-a/extra1.txt"]
 
     assert generated_file.content == b"extra a1\n"
     assert generated_file.executable is False
@@ -242,7 +231,7 @@ def test_an_extra_file_is_copied_byte_for_byte_without_a_header(fixture_repo: Pa
 # --------------------------------------------------------------------------------
 
 def test_an_executable_extra_file_keeps_its_exec_bit_on_disk(fixture_repo: Path) -> None:
-    tool_file = fixture_repo / "skills" / "a" / "tool1"
+    tool_file = fixture_repo / "skills" / "bp-a" / "tool1"
 
     tool_file.write_bytes(b"#!/bin/sh\n")
     tool_file.chmod(0o755)
@@ -250,11 +239,11 @@ def test_an_executable_extra_file_keeps_its_exec_bit_on_disk(fixture_repo: Path)
     assert generate.main([], fixture_repo) == 0
 
     for agent_name in AGENT_NAME_LIST:
-        generated_file = render_repo(fixture_repo)[f"{agent_name}/skills/a/tool1"]
+        generated_file = render_repo(fixture_repo)[f"{agent_name}/skills/bp-a/tool1"]
 
         assert generated_file.content == b"#!/bin/sh\n"
         assert generated_file.executable is True
-        assert (fixture_repo / "generated" / agent_name / "skills" / "a" / "tool1").stat().st_mode & 0o100
+        assert (fixture_repo / "generated" / agent_name / "skills" / "bp-a" / "tool1").stat().st_mode & 0o100
 
 
 # --------------------------------------------------------------------------------
@@ -264,14 +253,14 @@ def test_an_executable_extra_file_keeps_its_exec_bit_on_disk(fixture_repo: Path)
 def test_the_disable_model_invocation_flag_is_passed_through_as_a_boolean(
     fixture_repo: Path, agent_name: str, flag_text: str
 ) -> None:
-    skill_file = fixture_repo / "skills" / "a" / "SKILL.md"
+    skill_file = fixture_repo / "skills" / "bp-a" / "SKILL.md"
     master_text = skill_file.read_text(encoding="utf-8")
 
     skill_file.write_text(
         master_text.replace("---\n\n", f"disable-model-invocation: {flag_text}\n---\n\n", 1), encoding="utf-8"
     )
 
-    output_text = _output_text(fixture_repo, f"{agent_name}/skills/a/SKILL.md")
+    output_text = _output_text(fixture_repo, f"{agent_name}/skills/bp-a/SKILL.md")
 
     assert output_text == EXPECTED_SKILL_A.replace(
         "---\n<!--", f"disable-model-invocation: {flag_text}\n---\n<!--", 1

@@ -74,15 +74,15 @@ def test_update_practice_skill_reads_and_names_the_generate_and_gate_commands() 
     for skill in read_masters(REPO_DIR).skill_list:
         skill_by_name_map[skill.name] = skill
 
-    assert "update-practice" in skill_by_name_map
+    assert "bp-update-practice" in skill_by_name_map
 
-    body = skill_by_name_map["update-practice"].body
+    body = skill_by_name_map["bp-update-practice"].body
 
     assert "uv run --locked python -m practices.generate" in body
     assert "uv run --locked python -m practices.gate" in body
 
     for agent_name in AGENT_NAME_LIST:
-        skill_file = REPO_DIR / GENERATED_FOLDER / agent_name / "skills" / "update-practice" / "SKILL.md"
+        skill_file = REPO_DIR / GENERATED_FOLDER / agent_name / "skills" / "bp-update-practice" / "SKILL.md"
 
         assert skill_file.is_file()
 

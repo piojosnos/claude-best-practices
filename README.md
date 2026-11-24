@@ -23,6 +23,8 @@ Edit the masters. The generator renders them into `generated/`, which is committ
 
 A rule without frontmatter is always loaded. Every generated file starts with a header that names its master.
 
+Every practice name starts with `bp-`, or `bp-exp-` for an experimental practice: `rules/bp-java.md`, `skills/bp-exp-pre-pr-review/`. Promoting an experimental practice is a rename from `bp-exp-<name>` to `bp-<name>`.
+
 ## Commands
 
 Run from the clone root:

@@ -16,14 +16,14 @@ def test_generate_writes_both_agents_for_every_master(fixture_repo: Path, capsys
     assert generate.main([], fixture_repo) == 0
 
     assert _generated_path_list(fixture_repo) == [
-        "claude/rules/a.md",
-        "claude/rules/b.md",
-        "claude/skills/a/SKILL.md",
-        "claude/skills/a/extra1.txt",
-        "cursor/rules/a.mdc",
-        "cursor/rules/b.mdc",
-        "cursor/skills/a/SKILL.md",
-        "cursor/skills/a/extra1.txt",
+        "claude/rules/bp-a.md",
+        "claude/rules/bp-b.md",
+        "claude/skills/bp-a/SKILL.md",
+        "claude/skills/bp-a/extra1.txt",
+        "cursor/rules/bp-a.mdc",
+        "cursor/rules/bp-b.mdc",
+        "cursor/skills/bp-a/SKILL.md",
+        "cursor/skills/bp-a/extra1.txt",
     ]
     assert capsys.readouterr().out == "practices.generate: wrote 8 files under generated/\n"
 
@@ -33,19 +33,19 @@ def test_generate_writes_both_agents_for_every_master(fixture_repo: Path, capsys
 def test_generated_files_carry_the_header_and_each_agent_format(fixture_repo: Path) -> None:
     generate.main([], fixture_repo)
     generated_dir = fixture_repo / "generated"
-    header = "<!-- GENERATED from rules/b.md; edit that file and regenerate -->\n"
+    header = "<!-- GENERATED from rules/bp-b.md; edit that file and regenerate -->\n"
 
-    assert (generated_dir / "claude/rules/a.md").read_text() == (
-        "<!-- GENERATED from rules/a.md; edit that file and regenerate -->\n\n# A1\n\nText a1.\n"
+    assert (generated_dir / "claude/rules/bp-a.md").read_text() == (
+        "<!-- GENERATED from rules/bp-a.md; edit that file and regenerate -->\n\n# A1\n\nText a1.\n"
     )
-    assert (generated_dir / "claude/rules/b.md").read_text() == (
+    assert (generated_dir / "claude/rules/bp-b.md").read_text() == (
         '---\npaths:\n  - "**/*.b1"\n  - "**/b2*.txt"\n---\n' + header + "\n# B1\n\nText b1.\n"
     )
-    assert (generated_dir / "cursor/rules/a.mdc").read_text() == (
+    assert (generated_dir / "cursor/rules/bp-a.mdc").read_text() == (
         "---\nalwaysApply: true\n---\n"
-        "<!-- GENERATED from rules/a.md; edit that file and regenerate -->\n\n# A1\n\nText a1.\n"
+        "<!-- GENERATED from rules/bp-a.md; edit that file and regenerate -->\n\n# A1\n\nText a1.\n"
     )
-    assert (generated_dir / "cursor/rules/b.mdc").read_text() == (
+    assert (generated_dir / "cursor/rules/bp-b.mdc").read_text() == (
         "---\nglobs: **/*.b1, **/b2*.txt\nalwaysApply: false\n---\n" + header + "\n# B1\n\nText b1.\n"
     )
 
@@ -56,15 +56,15 @@ def test_generated_files_carry_the_header_and_each_agent_format(fixture_repo: Pa
 
 def test_a_removed_master_loses_its_output(fixture_repo: Path, capsys) -> None:
     generate.main([], fixture_repo)
-    (fixture_repo / "rules" / "b.md").unlink()
+    (fixture_repo / "rules" / "bp-b.md").unlink()
     capsys.readouterr()
 
     assert check.main([], fixture_repo) == 1
-    assert "extra file: generated/claude/rules/b.md\n" in capsys.readouterr().out
+    assert "extra file: generated/claude/rules/bp-b.md\n" in capsys.readouterr().out
 
     assert generate.main([], fixture_repo) == 0
-    assert not (fixture_repo / "generated/claude/rules/b.md").exists()
-    assert not (fixture_repo / "generated/cursor/rules/b.mdc").exists()
+    assert not (fixture_repo / "generated/claude/rules/bp-b.md").exists()
+    assert not (fixture_repo / "generated/cursor/rules/bp-b.mdc").exists()
     assert check.main([], fixture_repo) == 0
 
 
@@ -73,11 +73,11 @@ def test_a_removed_master_loses_its_output(fixture_repo: Path, capsys) -> None:
 def test_a_broken_master_leaves_generated_untouched(fixture_repo: Path, capsys) -> None:
     generate.main([], fixture_repo)
     before_snapshot = snapshot_generated(fixture_repo)
-    (fixture_repo / "rules" / "a.md").write_text('---\npath:\n  - "**/*.a1"\n---\n\n# A1\n\nText a1.\n')
+    (fixture_repo / "rules" / "bp-a.md").write_text('---\npath:\n  - "**/*.a1"\n---\n\n# A1\n\nText a1.\n')
     capsys.readouterr()
 
     assert generate.main([], fixture_repo) == 1
-    assert "rules/a.md: unknown frontmatter key 'path'" in capsys.readouterr().err
+    assert "rules/bp-a.md: unknown frontmatter key 'path'" in capsys.readouterr().err
     assert snapshot_generated(fixture_repo) == before_snapshot
 
 

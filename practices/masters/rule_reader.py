@@ -9,7 +9,7 @@ from pathlib import Path
 
 from practices.error.practices_error import PracticesError
 from practices.masters.frontmatter_parser import check_keys, split_frontmatter
-from practices.masters.master_file import read_text, refuse_link
+from practices.masters.master_file import check_name_prefix, read_text, refuse_link
 from practices.masters.masters_model import Rule
 
 
@@ -71,6 +71,9 @@ def _is_master(repo_dir: Path, rules_dir: Path, entry: Path) -> bool:
 def _read_rule(repo_dir: Path, master_file: Path) -> Rule:
     master_path = master_file.relative_to(repo_dir).as_posix()
     name = master_file.relative_to(repo_dir / _RULES_FOLDER).with_suffix("").as_posix()
+
+    check_name_prefix(master_file.stem, master_path)
+
     text = read_text(master_file, master_path)
     frontmatter_map, body = split_frontmatter(text, master_path)
 

@@ -1,0 +1,25 @@
+---
+alwaysApply: true
+---
+<!-- GENERATED from rules/bp-communication.md; edit that file and regenerate -->
+
+# Communication
+
+- Be concrete and brief. When a decision comes up, lead with a short pros/cons and a clear recommendation, not a wall of technical detail or a question loaded with jargon.
+- Expand into the deeper reasoning only when asked.
+- Default to a few sentences. Shape: brief framing, short pros/cons (or a tight contrast), recommendation, then one focused question if needed.
+- Skip big comparison tables and multi-section analyses unless asked. Save the deep dive for when the user says "explain more".
+- Before offering a multiple-choice decision with a non-obvious rationale, explain the intent and the concrete tradeoffs first, grounded in the real code (class names, counts, file paths). Then give a clear recommendation and say why. Push back honestly when the user is overcomplicating.
+  Why: the user makes the architecture calls.
+- Recommend the right design, not the cheapest change. When one option is cleaner, easier to read and more future-proof, and another is only acceptable because it avoids churn, list the right one first and recommend it. State its churn and risk plainly as the cost; the user decides whether that cost is too high.
+- Do not turn a soft constraint into a reason to settle. Work that is only planned (an unbuilt roadmap phase), docs that would need an edit, or commands people would relearn are costs to name, not walls.
+  Why: churn is cheap for an agent and paid once; a weaker design is paid every day after.
+- When the user answers a picker with "let me clarify", ask what is unclear, expand with grounded context and a recommendation, then re-pose the question (reframed if needed). Do not retry the same options cold.
+- Surface deferred work explicitly and offer to add it to the roadmap.
+- In discussion phases, present each option in prose with a recommendation and let the user reply in text. Use a multiple-choice picker, if the agent has one, only when the choices are settled and simple.
+- Keep explanations jargon-light; when a term is dense, define it plainly.
+
+## Constraints and destructive actions
+
+- Never improvise an alternative without approval. When the agreed approach hits a constraint, stop, explain the constraint, present the options with a recommendation, and wait for a decision.
+- Before a destructive or irreversible action (deleting files or branches, force-pushing, dropping data), list exactly what it affects and wait for an explicit go. A question like "which of these can be deleted?" asks for an answer, not for the deletion.
