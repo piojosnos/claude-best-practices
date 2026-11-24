@@ -7,11 +7,11 @@ from pathlib import Path
 
 from practices.check import find_drift
 from practices.cli import REPO_DIR
+from practices.output import GENERATED_FOLDER
 from practices.reader import read_masters
 from tests.helpers import render_repo
 
 
-GENERATED_FOLDER = "generated"
 AGENT_NAME_LIST = ["claude", "cursor"]
 
 

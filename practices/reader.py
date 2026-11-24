@@ -10,7 +10,7 @@ from pathlib import Path
 import yaml
 
 from practices.errors import PracticesError
-from practices.model import ExtraFile, Masters, Rule, Skill
+from practices.model import ExtraFile, Masters, Rule, Skill, is_executable
 
 
 # --------------------------------------------------------------------------------
@@ -20,16 +20,15 @@ from practices.model import ExtraFile, Masters, Rule, Skill
 _RULES_FOLDER = "rules"
 _SKILLS_FOLDER = "skills"
 SKILL_FILE_NAME = "SKILL.md"
-_ALLOWED_RULE_KEY_SET = {"paths"}
-_ALLOWED_SKILL_KEY_SET = {"name", "description", "disable-model-invocation"}
-_MAX_DESCRIPTION_LENGTH = 1024
-_MAX_SKILL_NAME_LENGTH = 64
 _FRONTMATTER_FENCE = "---"
 _PATHS_KEY = "paths"
 _NAME_KEY = "name"
 _DESCRIPTION_KEY = "description"
 _DISABLE_MODEL_INVOCATION_KEY = "disable-model-invocation"
-_OWNER_EXEC_BIT = 0o100
+_ALLOWED_RULE_KEY_SET = {_PATHS_KEY}
+_ALLOWED_SKILL_KEY_SET = {_NAME_KEY, _DESCRIPTION_KEY, _DISABLE_MODEL_INVOCATION_KEY}
+_MAX_DESCRIPTION_LENGTH = 1024
+_MAX_SKILL_NAME_LENGTH = 64
 
 
 # --------------------------------------------------------------------------------
@@ -296,7 +295,7 @@ def _read_extra_file(entry: Path, relative_path: str, master_path: str) -> Extra
     except OSError as e:
         raise PracticesError(f"{master_path}: cannot read the file") from e
 
-    return ExtraFile(relative_path, content, bool(entry.stat().st_mode & _OWNER_EXEC_BIT))
+    return ExtraFile(relative_path, content, is_executable(entry))
 
 
 # --------------------------------------------------------------------------------

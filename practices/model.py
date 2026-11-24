@@ -3,6 +3,7 @@
 # --------------------------------------------------------------------------------
 
 from dataclasses import dataclass
+from pathlib import Path
 
 
 # --------------------------------------------------------------------------------
@@ -48,3 +49,14 @@ class Masters:
 class OutputFile:
     content: bytes
     executable: bool
+
+
+# --------------------------------------------------------------------------------
+# File mode
+# --------------------------------------------------------------------------------
+
+_OWNER_EXEC_BIT = 0o100
+
+
+def is_executable(path: Path) -> bool:
+    return bool(path.stat().st_mode & _OWNER_EXEC_BIT)

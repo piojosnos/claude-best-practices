@@ -9,7 +9,7 @@ import shutil
 from pathlib import Path
 
 from practices.errors import PracticesError
-from practices.model import OutputFile
+from practices.model import OutputFile, is_executable
 
 
 # --------------------------------------------------------------------------------
@@ -19,7 +19,6 @@ from practices.model import OutputFile
 GENERATED_FOLDER = "generated"
 _EXECUTABLE_MODE = 0o755
 _PLAIN_MODE = 0o644
-_OWNER_EXEC_BIT = 0o100
 
 
 # --------------------------------------------------------------------------------
@@ -75,7 +74,7 @@ def read_output_tree(repo_dir: Path) -> dict[str, OutputFile]:
             )
 
         if entry.is_file():
-            executable = bool(entry.stat().st_mode & _OWNER_EXEC_BIT)
+            executable = is_executable(entry)
             output_by_path_map[output_path] = OutputFile(entry.read_bytes(), executable)
 
     return output_by_path_map
