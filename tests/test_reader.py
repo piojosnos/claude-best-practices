@@ -70,6 +70,10 @@ BROKEN_RULE_MASTER_LIST = [
         "rules/x1.md: the frontmatter is not valid YAML",
     ),
     (
+        '---\npaths:\n  - "**/*.x1"\npaths:\n  - "**/*.x2"\n---\n\n# X1\n\nText x1.\n',
+        "rules/x1.md: the frontmatter repeats the key 'paths'",
+    ),
+    (
         "---\n- a1\n---\n\n# X1\n\nText x1.\n",
         "rules/x1.md: the frontmatter must be a mapping of keys",
     ),
@@ -144,6 +148,11 @@ BROKEN_SKILL_MASTER_LIST = [
     ),
     (
         "x1",
+        "---\nname: x1\ndescription: d1\ndescription: d2\n---\n\n# X1\n\nText x1.\n",
+        "skills/x1/SKILL.md: the frontmatter repeats the key 'description'",
+    ),
+    (
+        "x1",
         "---\nname: x1\ndescription: d1\n---\n",
         "skills/x1/SKILL.md: the master has no text",
     ),
@@ -193,6 +202,19 @@ def test_a_master_with_crlf_line_ends_reads_like_its_lf_twin(fixture_repo: Path)
     (fixture_repo / "rules" / "x1.md").write_bytes(lf_text.replace("\n", "\r\n").encode("utf-8"))
 
     assert _rule_named(fixture_repo, "x1") == lf_rule
+
+
+def test_a_master_with_a_bom_and_spaced_fences_reads_like_its_plain_twin(fixture_repo: Path) -> None:
+    plain_text = '---\npaths:\n  - "**/*.x1"\n---\n\n# X1\n\nText x1.\n'
+
+    _write_master(fixture_repo, "x1.md", plain_text)
+    plain_rule = _rule_named(fixture_repo, "x1")
+
+    spaced_text = plain_text.replace("---\n", "--- \n")
+
+    (fixture_repo / "rules" / "x1.md").write_bytes(b"\xef\xbb\xbf" + spaced_text.encode("utf-8"))
+
+    assert _rule_named(fixture_repo, "x1") == plain_rule
 
 
 def test_hidden_entries_in_rules_are_skipped(fixture_repo: Path) -> None:
