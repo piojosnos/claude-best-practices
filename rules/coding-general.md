@@ -27,7 +27,7 @@ Language-agnostic conventions for new application code.
 
 - In test fixtures (ids, keys, paths, and the local variables derived from them), prefer abstract, numbered names (`tags1`, `tags2`) over semantic ones (`tags`, `places`), unless the explicit name genuinely adds value to that test.
 - Example: prefer `taxos/tags1` and `taxos/tags2` to `taxos/tags` and `taxos/places`; prefer `feeds/a` and `feeds/b` to `feeds/news` and `feeds/photos`.
-- Why: abstract names keep the test about structure, not a particular domain, and avoid implying a meaning the test does not actually assert. A semantic name earns its place only when the test is specifically about that meaning (for example a test that a `drafts` feed is excluded).
+- A semantic name earns its place only when the test is about that meaning (for example a test that a `drafts` feed is excluded).
 
 ## Blank lines around control flow
 
@@ -98,8 +98,6 @@ Applies to every language. In brace languages it looks like the bullets below; i
 - Every language in a project gets a linter, and it runs as part of the normal build or test command, so a finding fails like a failing test. The language rules say where and how.
 - Generated code is never linted; it is never hand-edited either.
 
-Why: a linter that does not run automatically stops being run, and its findings pile up unseen.
-
 ## Secrets and environment-specific values
 
 - Never hardcode secrets, tokens, credentials or values that belong to one environment (hosts, ports, machine paths). Read them from environment variables or config files, following the project's existing pattern. Never commit a secret value.
@@ -121,21 +119,17 @@ Why: a linter that does not run automatically stops being run, and its findings 
 - Keep a test plain: setup, action, assertion. Add a helper only when several tests share it.
 - When the list of possible tests is long, propose the short list and let the user add more, rather than writing them all.
 
-Why: every extra test is code to read, run and keep working; a lean suite that fails only on real regressions is trusted and kept green.
-
 ### Logging
 
 - Do not test logging. Test a log line only when the feature itself is about that line (an audit entry, a trace id the logs must carry). Then assert that one line, never every line around it.
 
-Why: log wording changes freely; tests that pin it break on harmless rewording.
+Why: log wording changes freely.
 
 ### Test file layout: the TDL split
 
 - Every test file, in any language, has the tests first, then a `TDL` banner, then the helpers (builders, request factories, assertion helpers, finders, stub handlers).
 - Frame the banner with the language's separator rule on its own line above and below it: `// TDL` between two `// ---` rules in Java, `# TDL` between two `# ---` rules in Python.
 - Module constants stay at the top. A file that holds only fixtures (for example `conftest.py`) needs no split.
-
-Why: a reader scans the behavior first and drops into the scaffolding only when needed.
 
 ## Symmetry
 
@@ -165,5 +159,3 @@ Write scripts that hold logic in Python, not shell: CLIs, file and folder checks
 - Pin the Python version and the dependencies with the project's tooling, so nobody manages an environment by hand.
 - Test that logic with pytest, not shell harnesses.
 - Keep config and state files structured (JSON), not line formats parsed by hand.
-
-Why: shell logic grows into long, fragile scripts with portability traps, and its tests outgrow the code. Python keeps both short, and adding a config field stays a one-line change.

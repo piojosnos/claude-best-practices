@@ -10,5 +10,3 @@ Applies to every artifact you write: source comments, Markdown docs, READMEs, PR
 - The only `--` allowed is literal code: CSS custom properties like `--frame-*`, CLI flags like `--no-verify`. Those are syntax, not punctuation.
 - **Punctuation goes outside closing quotes.** Write `"what", not "where".` with the comma or period after the closing quote.
   - Exception: punctuation stays inside when it is part of a verbatim quoted string or message.
-
-Why: dashes standing in for punctuation are a persistent tic in generated prose that the user dislikes, and non-ASCII characters are fragile in source files.

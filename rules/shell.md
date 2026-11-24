@@ -34,8 +34,6 @@ Committed shell scripts run on the user's macOS (BSD tools, bash 3.2). Agents au
 
 - Always double-quote a variable expansion, including the variable part of a path glob: `cp "$dir"/*.md out/`, not `cp $dir/*.md out/`. Leave only the glob itself unquoted.
 
-Why: an unquoted expansion splits at spaces and is expanded again, so a path like `My Projects` breaks the command.
-
 ## Libraries and programs
 
 - A file is either a library or a program, never both. A library defines variables and functions, runs nothing and sets no shell options. A program runs; nothing sources it.
