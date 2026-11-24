@@ -31,6 +31,8 @@ def _print_notice(command_name: str, text: str) -> None:
     print(f"{command_name}: {text}", file=sys.stderr)
 
 
+# --------------------------------------------------------------------------------
+
 def run_command(command_name: str, action: Callable[[], None]) -> int:
     try:
         action()

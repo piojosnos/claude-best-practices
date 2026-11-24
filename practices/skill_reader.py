@@ -46,6 +46,8 @@ def read_skill_list(repo_dir: Path) -> list[Skill]:
     return skill_list
 
 
+# --------------------------------------------------------------------------------
+
 def _is_skill_dir(repo_dir: Path, entry: Path) -> bool:
     if entry.name.startswith("."):
         return False
@@ -59,6 +61,8 @@ def _is_skill_dir(repo_dir: Path, entry: Path) -> bool:
 
     return True
 
+
+# --------------------------------------------------------------------------------
 
 def _read_skill(repo_dir: Path, skill_dir: Path) -> Skill:
     skill_path = skill_dir.relative_to(repo_dir).as_posix()
@@ -115,6 +119,8 @@ def _check_name(name: object, folder_name: str, master_path: str) -> None:
         )
 
 
+# --------------------------------------------------------------------------------
+
 def _is_skill_name(name: str) -> bool:
     if len(name) > _MAX_SKILL_NAME_LENGTH:
         return False
@@ -126,6 +132,8 @@ def _is_skill_name(name: str) -> bool:
     return True
 
 
+# --------------------------------------------------------------------------------
+
 def _check_description(description: object, master_path: str) -> None:
     if (
         not isinstance(description, str)
@@ -136,6 +144,8 @@ def _check_description(description: object, master_path: str) -> None:
             f"{master_path}: description must be text of 1 to {_MAX_DESCRIPTION_LENGTH} characters"
         )
 
+
+# --------------------------------------------------------------------------------
 
 def _read_disable_model_invocation(frontmatter_map: dict, master_path: str) -> bool | None:
     if _DISABLE_MODEL_INVOCATION_KEY not in frontmatter_map:
@@ -171,6 +181,8 @@ def _read_extra_file_list(skill_dir: Path, skill_path: str) -> list[ExtraFile]:
     return extra_file_list
 
 
+# --------------------------------------------------------------------------------
+
 def _is_hidden_or_skill_file(relative_path: str) -> bool:
     if relative_path == SKILL_FILE_NAME:
         return True
@@ -181,6 +193,8 @@ def _is_hidden_or_skill_file(relative_path: str) -> bool:
 
     return False
 
+
+# --------------------------------------------------------------------------------
 
 def _read_extra_file(entry: Path, relative_path: str, master_path: str) -> ExtraFile:
     try:

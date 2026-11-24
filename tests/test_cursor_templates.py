@@ -43,6 +43,8 @@ def test_cursor_rule_without_paths_is_always_apply(fixture_repo: Path) -> None:
     assert _output_text(fixture_repo, "cursor/rules/a.mdc") == EXPECTED_CURSOR_RULE_A
 
 
+# --------------------------------------------------------------------------------
+
 def test_cursor_rule_with_paths_joins_the_globs_and_is_not_always_apply(fixture_repo: Path) -> None:
     assert _output_text(fixture_repo, "cursor/rules/b.mdc") == EXPECTED_CURSOR_RULE_B
 

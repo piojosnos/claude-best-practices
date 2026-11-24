@@ -9,6 +9,8 @@ class PracticesError(Exception):
     pass
 
 
+# --------------------------------------------------------------------------------
+
 class UsageError(Exception):
     def __init__(self, args_text: str) -> None:
         super().__init__(args_text)

@@ -44,6 +44,8 @@ def _run_gate(argument_list: list[str], repo_dir: Path, step_list: list[tuple[st
     print(f"{_COMMAND_NAME}: every step passed")
 
 
+# --------------------------------------------------------------------------------
+
 def main(
     argument_list: list[str],
     repo_dir: Path = REPO_DIR,

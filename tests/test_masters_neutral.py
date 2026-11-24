@@ -41,6 +41,8 @@ def test_no_master_names_an_agent_path_or_tool() -> None:
     assert problem_list == []
 
 
+# --------------------------------------------------------------------------------
+
 def test_the_master_walk_skips_hidden_and_binary_files(fixture_repo: Path) -> None:
     (fixture_repo / "rules" / ".DS_Store").write_bytes(b"\xff\xfe")
     (fixture_repo / "skills" / "a" / ".DS_Store").write_bytes(b"\xff\xfe")
@@ -65,12 +67,16 @@ def test_the_best_practices_rule_points_at_the_masters_and_the_update_skill() ->
         assert expected_text in text
 
 
+# --------------------------------------------------------------------------------
+
 def test_the_best_practices_rule_names_no_absolute_path() -> None:
     text = (REPO_DIR / BEST_PRACTICES_RULE).read_text(encoding="utf-8")
 
     assert "`/" not in text
     assert "~/" not in text
 
+
+# --------------------------------------------------------------------------------
 
 def test_finding_the_clone_names_the_folder_git_must_run_in() -> None:
     problem_list = []

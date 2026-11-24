@@ -46,6 +46,8 @@ def read_rule_list(repo_dir: Path) -> list[Rule]:
     return rule_list
 
 
+# --------------------------------------------------------------------------------
+
 def _is_master(repo_dir: Path, rules_dir: Path, entry: Path) -> bool:
     for part in entry.relative_to(rules_dir).parts:
         if part.startswith("."):
@@ -63,6 +65,8 @@ def _is_master(repo_dir: Path, rules_dir: Path, entry: Path) -> bool:
 
     return True
 
+
+# --------------------------------------------------------------------------------
 
 def _read_rule(repo_dir: Path, master_file: Path) -> Rule:
     master_path = master_file.relative_to(repo_dir).as_posix()
@@ -84,6 +88,8 @@ def _read_rule(repo_dir: Path, master_file: Path) -> Rule:
 
     return Rule(name, master_path, path_list, body)
 
+
+# --------------------------------------------------------------------------------
 
 def _check_path_list(path_list: object, master_path: str) -> list[str]:
     if not isinstance(path_list, list) or not path_list:

@@ -104,6 +104,8 @@ def test_reader_returns_a_typed_skill_of_the_fixture_master(fixture_repo: Path) 
     ]
 
 
+# --------------------------------------------------------------------------------
+
 @pytest.mark.parametrize("text, expected", [("true", True), ("false", False)])
 def test_reader_reads_the_disable_model_invocation_flag_of_a_skill(
     fixture_repo: Path, text: str, expected: bool
@@ -120,6 +122,8 @@ def test_reader_reads_the_disable_model_invocation_flag_of_a_skill(
     assert skill_by_name_map["a"].disable_model_invocation is None
 
 
+# --------------------------------------------------------------------------------
+
 def test_a_skill_extra_file_in_a_subfolder_keeps_its_relative_path_and_exec_bit(fixture_repo: Path) -> None:
     tool_file = fixture_repo / "skills" / "a" / "scripts1" / "tool1"
 
@@ -133,6 +137,8 @@ def test_a_skill_extra_file_in_a_subfolder_keeps_its_relative_path_and_exec_bit(
     ]
 
 
+# --------------------------------------------------------------------------------
+
 def test_skills_come_back_sorted_by_name(fixture_repo: Path) -> None:
     write_skill(fixture_repo, "z1", "---\nname: z1\ndescription: d1\n---\n\n# Z1\n\nText z1.\n")
     write_skill(fixture_repo, "c1", "---\nname: c1\ndescription: d1\n---\n\n# C1\n\nText c1.\n")
@@ -144,6 +150,8 @@ def test_skills_come_back_sorted_by_name(fixture_repo: Path) -> None:
 
     assert skill_name_list == ["a", "c1", "z1"]
 
+
+# --------------------------------------------------------------------------------
 
 def test_hidden_entries_in_skills_are_skipped(fixture_repo: Path) -> None:
     (fixture_repo / "skills" / "a" / ".DS_Store").write_bytes(b"junk")
@@ -175,6 +183,8 @@ def test_reader_rejects_a_broken_skill_master(
     assert str(raised.value) == message
 
 
+# --------------------------------------------------------------------------------
+
 def test_reader_rejects_a_file_directly_in_skills(fixture_repo: Path) -> None:
     (fixture_repo / "skills" / "notes1.txt").write_text("Text n1.\n", encoding="utf-8")
 
@@ -183,6 +193,8 @@ def test_reader_rejects_a_file_directly_in_skills(fixture_repo: Path) -> None:
 
     assert str(raised.value) == "skills/notes1.txt: skills/ holds only skill folders"
 
+
+# --------------------------------------------------------------------------------
 
 def test_reader_rejects_a_link_in_a_skill(fixture_repo: Path, tmp_path: Path) -> None:
     outside_file = tmp_path / "outside1.txt"

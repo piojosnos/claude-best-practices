@@ -38,6 +38,8 @@ def split_frontmatter(text: str, master_path: str) -> tuple[dict, str]:
     raise PracticesError(f"{master_path}: the frontmatter has no closing {_FRONTMATTER_FENCE} line")
 
 
+# --------------------------------------------------------------------------------
+
 def _parse_block(block: str, master_path: str) -> dict:
     try:
         parsed_value = yaml.load(block, Loader=_UniqueKeyLoader)
@@ -54,6 +56,8 @@ def _parse_block(block: str, master_path: str) -> dict:
 
     return parsed_value
 
+
+# --------------------------------------------------------------------------------
 
 def check_keys(frontmatter_map: dict, master_path: str, allowed_key_set: set[str], kind: str) -> None:
     for key in sorted(frontmatter_map, key=str):
@@ -74,6 +78,8 @@ class _DuplicateKeyError(yaml.YAMLError):
         super().__init__(key)
         self.key = key
 
+
+# --------------------------------------------------------------------------------
 
 class _UniqueKeyLoader(yaml.SafeLoader):
     def construct_mapping(self, node: yaml.MappingNode, deep: bool = False) -> dict:

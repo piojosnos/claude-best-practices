@@ -20,6 +20,8 @@ def test_the_gate_runs_every_step_in_order_and_passes(tmp_path: Path, capsys) ->
     assert capsys.readouterr().out == "practices.gate: s1\npractices.gate: s2\npractices.gate: every step passed\n"
 
 
+# --------------------------------------------------------------------------------
+
 def test_the_gate_stops_at_the_first_failing_step(tmp_path: Path, capsys) -> None:
     step_list = [_step("s1", 0), _step("s2", 3), _step("s3", 0)]
 
@@ -27,6 +29,8 @@ def test_the_gate_stops_at_the_first_failing_step(tmp_path: Path, capsys) -> Non
     assert (tmp_path / "ran.txt").read_text() == "s1\ns2\n"
     assert "practices.gate: s2 failed" in capsys.readouterr().err
 
+
+# --------------------------------------------------------------------------------
 
 def test_the_gate_refuses_an_argument(capsys) -> None:
     assert gate.main(["extra"]) == 2

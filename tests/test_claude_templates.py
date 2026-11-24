@@ -44,9 +44,13 @@ def test_claude_rule_without_paths_is_the_header_and_the_body(fixture_repo: Path
     assert _output_text(fixture_repo, "claude/rules/a.md") == EXPECTED_CLAUDE_RULE_A
 
 
+# --------------------------------------------------------------------------------
+
 def test_claude_rule_with_paths_keeps_a_quoted_paths_list_before_the_header(fixture_repo: Path) -> None:
     assert _output_text(fixture_repo, "claude/rules/b.md") == EXPECTED_CLAUDE_RULE_B
 
+
+# --------------------------------------------------------------------------------
 
 def test_a_glob_with_a_hash_and_a_quote_survives_the_yaml_round_trip(fixture_repo: Path) -> None:
     glob = "**/#1'x.txt"
@@ -57,6 +61,8 @@ def test_a_glob_with_a_hash_and_a_quote_survives_the_yaml_round_trip(fixture_rep
 
     assert frontmatter_map == {"paths": [glob]}
 
+
+# --------------------------------------------------------------------------------
 
 def test_jinja_syntax_in_a_master_body_renders_literally(fixture_repo: Path) -> None:
     write_master(fixture_repo, "l1.md", f"# L1\n\n{JINJA_BODY_LINE}\n")
@@ -81,6 +87,8 @@ def test_every_real_master_round_trips_through_its_claude_output() -> None:
         assert rest.split("\n")[0] == _header_line(rule), rule.name
 
 
+# --------------------------------------------------------------------------------
+
 def test_every_output_ends_with_exactly_one_newline(fixture_repo: Path) -> None:
     for repo_dir in [fixture_repo, REPO_DIR]:
         for output_path, output_file in render_repo(repo_dir).items():
@@ -97,6 +105,8 @@ def _output_text(repo_dir: Path, output_path: str) -> str:
     return render_repo(repo_dir)[output_path].content.decode("utf-8")
 
 
+# --------------------------------------------------------------------------------
+
 def _split_output(text: str) -> tuple[dict | None, str]:
     line_list = text.split("\n")
 
@@ -109,12 +119,16 @@ def _split_output(text: str) -> tuple[dict | None, str]:
     return frontmatter_map, "\n".join(line_list[closing_index + 1:])
 
 
+# --------------------------------------------------------------------------------
+
 def _expected_frontmatter_map(rule: Rule) -> dict | None:
     if not rule.path_list:
         return None
 
     return {"paths": rule.path_list}
 
+
+# --------------------------------------------------------------------------------
 
 def _header_line(rule: Rule) -> str:
     return f"<!-- GENERATED from {rule.master_path}; edit that file and regenerate -->"

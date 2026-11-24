@@ -45,6 +45,8 @@ def _build_environment(templates_dir: Path) -> jinja2.Environment:
     return environment
 
 
+# --------------------------------------------------------------------------------
+
 def _yaml_str(text: str) -> str:
     quoted_text = json.dumps(text, ensure_ascii=False)
     escaped_char_list = []
@@ -57,6 +59,8 @@ def _yaml_str(text: str) -> str:
 
     return "".join(escaped_char_list)
 
+
+# --------------------------------------------------------------------------------
 
 def _escape_code_point(code_point: int) -> str:
     if code_point <= _MAX_SHORT_ESCAPE_CODE_POINT:
@@ -83,6 +87,8 @@ def render_all(masters: Masters, repo_dir: Path) -> dict[str, OutputFile]:
     return _sorted_by_path(output_by_path_map)
 
 
+# --------------------------------------------------------------------------------
+
 def _render_rule(environment: jinja2.Environment, profile: AgentProfile, rule: Rule) -> dict[str, OutputFile]:
     output_path = f"{profile.name}/{profile.rule_folder}/{rule.name}{profile.rule_extension}"
     value_by_name_map = {"rule": rule, "master_path": rule.master_path}
@@ -90,6 +96,8 @@ def _render_rule(environment: jinja2.Environment, profile: AgentProfile, rule: R
 
     return {output_path: OutputFile(rule_content, False)}
 
+
+# --------------------------------------------------------------------------------
 
 def _render_skill(environment: jinja2.Environment, profile: AgentProfile, skill: Skill) -> dict[str, OutputFile]:
     skill_path = f"{profile.name}/{profile.skill_folder}/{skill.name}"
@@ -105,6 +113,8 @@ def _render_skill(environment: jinja2.Environment, profile: AgentProfile, skill:
     return output_by_path_map
 
 
+# --------------------------------------------------------------------------------
+
 def _render_template(environment: jinja2.Environment, template_name: str, value_by_name_map: dict) -> bytes:
     try:
         template = environment.get_template(template_name)
@@ -114,6 +124,8 @@ def _render_template(environment: jinja2.Environment, template_name: str, value_
 
     return text.encode("utf-8")
 
+
+# --------------------------------------------------------------------------------
 
 def _sorted_by_path(output_by_path_map: dict[str, OutputFile]) -> dict[str, OutputFile]:
     sorted_map = {}

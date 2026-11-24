@@ -31,6 +31,8 @@ def test_layout_mirrors_each_agent_config_folder(fixture_repo: Path) -> None:
     ]
 
 
+# --------------------------------------------------------------------------------
+
 def test_output_keys_are_sorted_whatever_the_creation_order(fixture_repo: Path) -> None:
     write_master(fixture_repo, "z1.md", "# R1\n\nText r1.\n")
     write_master(fixture_repo, "c1.md", "# R1\n\nText r1.\n")
@@ -40,6 +42,8 @@ def test_output_keys_are_sorted_whatever_the_creation_order(fixture_repo: Path) 
     assert output_path_list == sorted(output_path_list)
     assert "claude/rules/c1.md" in output_path_list
 
+
+# --------------------------------------------------------------------------------
 
 def test_two_generate_runs_are_idempotent(fixture_repo: Path) -> None:
     generate.main([], fixture_repo)
@@ -68,6 +72,8 @@ def test_a_removed_master_loses_its_output(fixture_repo: Path, capsys) -> None:
     assert check.main([], fixture_repo) == 0
 
 
+# --------------------------------------------------------------------------------
+
 def test_a_broken_master_leaves_generated_untouched(fixture_repo: Path, capsys) -> None:
     generate.main([], fixture_repo)
     before_snapshot = _snapshot(fixture_repo)
@@ -78,6 +84,8 @@ def test_a_broken_master_leaves_generated_untouched(fixture_repo: Path, capsys) 
     assert "rules/a.md: unknown frontmatter key 'path'" in capsys.readouterr().err
     assert _snapshot(fixture_repo) == before_snapshot
 
+
+# --------------------------------------------------------------------------------
 
 def test_a_write_that_fails_midway_leaves_generated_and_the_repo_as_they_were(fixture_repo: Path) -> None:
     generate.main([], fixture_repo)
@@ -95,6 +103,8 @@ def test_a_write_that_fails_midway_leaves_generated_and_the_repo_as_they_were(fi
     assert _snapshot(fixture_repo) == before_snapshot
     assert _name_list(fixture_repo) == before_name_list
 
+
+# --------------------------------------------------------------------------------
 
 def test_generate_refuses_a_generated_link(fixture_repo: Path, tmp_path: Path, capsys) -> None:
     elsewhere_dir = tmp_path / "elsewhere1"
@@ -124,6 +134,8 @@ def _snapshot(repo_dir: Path) -> dict[str, tuple[bytes, int]]:
 
     return snapshot_by_path_map
 
+
+# --------------------------------------------------------------------------------
 
 def _name_list(folder: Path) -> list[str]:
     name_list = []

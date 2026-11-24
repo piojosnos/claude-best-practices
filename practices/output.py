@@ -46,6 +46,8 @@ def write_output(repo_dir: Path, output_by_path_map: dict[str, OutputFile]) -> N
         shutil.rmtree(work_dir)
 
 
+# --------------------------------------------------------------------------------
+
 def _check_generated_dir(repo_dir: Path, generated_dir: Path) -> None:
     _refuse_generated_link(generated_dir)
 
@@ -55,10 +57,14 @@ def _check_generated_dir(repo_dir: Path, generated_dir: Path) -> None:
         )
 
 
+# --------------------------------------------------------------------------------
+
 def _refuse_generated_link(generated_dir: Path) -> None:
     if generated_dir.is_symlink():
         raise PracticesError(f"{GENERATED_FOLDER} is a link; {GENERATED_FOLDER}/ must be a plain folder")
 
+
+# --------------------------------------------------------------------------------
 
 def _swap_in(generated_dir: Path, new_dir: Path, old_dir: Path) -> None:
     if generated_dir.exists():
@@ -72,6 +78,8 @@ def _swap_in(generated_dir: Path, new_dir: Path, old_dir: Path) -> None:
 
         raise
 
+
+# --------------------------------------------------------------------------------
 
 def _write_file(target: Path, output_file: OutputFile) -> None:
     target.parent.mkdir(parents=True, exist_ok=True)

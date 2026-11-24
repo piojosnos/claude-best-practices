@@ -53,6 +53,8 @@ def find_drift(repo_dir: Path) -> list[str]:
     return drift_list
 
 
+# --------------------------------------------------------------------------------
+
 def _describe_changed_file(output_path: str, expected: OutputFile, actual: OutputFile) -> str:
     drift_line = f"changed file: {GENERATED_FOLDER}/{output_path}"
 
@@ -95,6 +97,8 @@ def _check_tree(argument_list: list[str], repo_dir: Path) -> None:
 
     print(f"{_COMMAND_NAME}: {GENERATED_FOLDER}/ matches the masters ({len(read_output_tree(repo_dir))} files)")
 
+
+# --------------------------------------------------------------------------------
 
 def main(argument_list: list[str], repo_dir: Path = REPO_DIR) -> int:
     return run_command(_COMMAND_NAME, partial(_check_tree, argument_list, repo_dir))

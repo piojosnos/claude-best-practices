@@ -16,6 +16,8 @@ def refuse_link(entry: Path, master_path: str) -> None:
         raise PracticesError(f"{master_path}: is a link; a master is a plain file")
 
 
+# --------------------------------------------------------------------------------
+
 def read_text(master_file: Path, master_path: str) -> str:
     try:
         return master_file.read_text(encoding="utf-8-sig")

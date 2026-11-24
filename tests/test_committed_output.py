@@ -98,6 +98,8 @@ def _git(*argument_list: str) -> subprocess.CompletedProcess:
     )
 
 
+# --------------------------------------------------------------------------------
+
 def _tracked_output_path_set() -> set[str]:
     tracked_path_set = set()
     prefix = f"{GENERATED_FOLDER}/"
@@ -107,6 +109,8 @@ def _tracked_output_path_set() -> set[str]:
 
     return tracked_path_set
 
+
+# --------------------------------------------------------------------------------
 
 def _master_path_by_output_path_map() -> dict[str, str]:
     masters = read_masters(REPO_DIR)
@@ -123,6 +127,8 @@ def _master_path_by_output_path_map() -> dict[str, str]:
 
     return master_path_by_output_path_map
 
+
+# --------------------------------------------------------------------------------
 
 def _first_line_after_frontmatter(output_file: Path) -> str:
     line_list = output_file.read_text(encoding="utf-8").split("\n")

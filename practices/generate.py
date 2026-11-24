@@ -41,6 +41,8 @@ def _generate(argument_list: list[str], repo_dir: Path) -> None:
     print(f"{_COMMAND_NAME}: wrote {len(output_by_path_map)} files under {GENERATED_FOLDER}/")
 
 
+# --------------------------------------------------------------------------------
+
 def main(argument_list: list[str], repo_dir: Path = REPO_DIR) -> int:
     return run_command(_COMMAND_NAME, partial(_generate, argument_list, repo_dir))
 

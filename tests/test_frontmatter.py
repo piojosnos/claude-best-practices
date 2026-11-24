@@ -44,6 +44,8 @@ def test_split_frontmatter_returns_the_map_and_the_body() -> None:
     assert split_frontmatter("---\nk1: v1\n---\n\n# X1\n", "m1.md") == ({"k1": "v1"}, "\n# X1\n")
 
 
+# --------------------------------------------------------------------------------
+
 def test_a_text_without_frontmatter_is_all_body() -> None:
     assert split_frontmatter("# X1\n\nText x1.\n", "m1.md") == ({}, "# X1\n\nText x1.\n")
 
