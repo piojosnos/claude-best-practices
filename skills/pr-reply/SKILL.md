@@ -109,6 +109,16 @@ says they have responded on the PR, re-fetch and reconcile before doing anything
 
 ## Conventions
 
+- **Always prefix every reply you post with `[Assistant] `.** Replies post under the
+  user's own GitHub account, so without the prefix the user cannot tell your comments
+  from theirs. The prefix is also how a later reconcile pass identifies which comments
+  are yours (a thread whose latest comment lacks `[Assistant]` is an unanswered user
+  message).
+- **Never leave a user message unacknowledged.** On every reconcile pass, for each
+  thread take the latest comment; if it is NOT a `[Assistant]` reply, it is unanswered and
+  needs a response: substantive for a question/decision, a terse `[Assistant] Ack, no
+  action.` for an explicit no-op the user closed (e.g. "no ops", "no action"). Do not
+  silently skip a thread because it looks settled; the user must see an acknowledgment.
 - Never `git add -A` when untracked scratch dirs exist; stage explicit paths.
 - Ground every "it moved / it's unused / it's safe" claim in a grep or diff first.
 - Propose, do not assume consent: approval for one comment is not approval for the rest.
