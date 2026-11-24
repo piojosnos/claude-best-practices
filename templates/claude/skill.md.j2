@@ -1,0 +1,7 @@
+---
+name: {{ skill.name }}
+description: {{ skill.description | yaml_str }}
+---
+{% include "_generated_header.j2" %}
+
+{{ skill.body }}

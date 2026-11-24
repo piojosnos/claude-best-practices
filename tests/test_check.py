@@ -13,10 +13,14 @@ def test_generate_writes_both_agents_for_every_master(fixture_repo: Path, capsys
     assert _generated_path_list(fixture_repo) == [
         "claude/rules/a.md",
         "claude/rules/b.md",
+        "claude/skills/a/SKILL.md",
+        "claude/skills/a/extra1.txt",
         "cursor/rules/a.mdc",
         "cursor/rules/b.mdc",
+        "cursor/skills/a/SKILL.md",
+        "cursor/skills/a/extra1.txt",
     ]
-    assert capsys.readouterr().out == "practices.generate: wrote 4 files under generated/\n"
+    assert capsys.readouterr().out == "practices.generate: wrote 8 files under generated/\n"
 
 
 def test_generated_files_carry_the_header_and_each_agent_format(fixture_repo: Path) -> None:
@@ -44,7 +48,7 @@ def test_check_passes_on_fresh_output(fixture_repo: Path, capsys) -> None:
     capsys.readouterr()
 
     assert check.main([], fixture_repo) == 0
-    assert capsys.readouterr().out == "practices.check: generated/ matches the masters (4 files)\n"
+    assert capsys.readouterr().out == "practices.check: generated/ matches the masters (8 files)\n"
 
 
 def test_check_names_a_hand_edited_file(fixture_repo: Path, capsys) -> None:

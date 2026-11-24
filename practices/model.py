@@ -18,8 +18,25 @@ class Rule:
 
 
 @dataclass(frozen=True)
+class ExtraFile:
+    path: str
+    content: bytes
+    executable: bool
+
+
+@dataclass(frozen=True)
+class Skill:
+    name: str
+    master_path: str
+    description: str
+    body: str
+    extra_file_list: list[ExtraFile]
+
+
+@dataclass(frozen=True)
 class Masters:
     rule_list: list[Rule]
+    skill_list: list[Skill]
 
 
 # --------------------------------------------------------------------------------

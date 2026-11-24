@@ -11,7 +11,7 @@ from pathlib import Path
 import jinja2
 
 from practices.cli import PracticesError
-from practices.model import OutputFile, Rule
+from practices.model import OutputFile, Rule, Skill
 from practices.profiles import AGENT_PROFILE_LIST, AgentProfile
 from practices.reader import read_masters
 
@@ -62,15 +62,38 @@ def render_all(repo_dir: Path) -> dict[str, OutputFile]:
             output_path = f"{profile.name}/{profile.rule_folder}/{rule.name}{profile.rule_extension}"
             output_by_path_map[output_path] = OutputFile(_render_rule(environment, profile, rule), False)
 
+        for skill in masters.skill_list:
+            output_by_path_map.update(_render_skill(environment, profile, skill))
+
     return _sorted_by_path(output_by_path_map)
 
 
 def _render_rule(environment: jinja2.Environment, profile: AgentProfile, rule: Rule) -> bytes:
+    value_by_name_map = {"rule": rule, "master_path": rule.master_path}
+
+    return _render_template(environment, profile.rule_template, value_by_name_map)
+
+
+def _render_skill(environment: jinja2.Environment, profile: AgentProfile, skill: Skill) -> dict[str, OutputFile]:
+    skill_path = f"{profile.name}/{profile.skill_folder}/{skill.name}"
+    value_by_name_map = {"skill": skill, "master_path": skill.master_path}
+    skill_content = _render_template(environment, profile.skill_template, value_by_name_map)
+    output_by_path_map = {f"{skill_path}/SKILL.md": OutputFile(skill_content, False)}
+
+    for extra_file in skill.extra_file_list:
+        output_by_path_map[f"{skill_path}/{extra_file.path}"] = OutputFile(
+            extra_file.content, extra_file.executable
+        )
+
+    return output_by_path_map
+
+
+def _render_template(environment: jinja2.Environment, template_name: str, value_by_name_map: dict) -> bytes:
     try:
-        template = environment.get_template(profile.rule_template)
-        text = template.render(rule=rule, master_path=rule.master_path)
+        template = environment.get_template(template_name)
+        text = template.render(value_by_name_map)
     except jinja2.TemplateError as e:
-        raise PracticesError(f"{profile.rule_template}: {e}") from e
+        raise PracticesError(f"{template_name}: {e}") from e
 
     return text.encode("utf-8")
 
