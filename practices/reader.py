@@ -9,7 +9,7 @@ from pathlib import Path
 
 import yaml
 
-from practices.cli import PracticesError
+from practices.errors import PracticesError
 from practices.model import ExtraFile, Masters, Rule, Skill
 
 

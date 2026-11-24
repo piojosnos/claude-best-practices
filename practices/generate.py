@@ -8,7 +8,8 @@ import sys
 from functools import partial
 from pathlib import Path
 
-from practices.cli import REPO_DIR, UsageError, run_command
+from practices.cli import REPO_DIR, run_command
+from practices.errors import UsageError
 from practices.output import GENERATED_FOLDER, write_output
 from practices.render import render_all
 

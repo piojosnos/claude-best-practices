@@ -9,7 +9,8 @@ import sys
 from functools import partial
 from pathlib import Path
 
-from practices.cli import REPO_DIR, PracticesError, UsageError, run_command
+from practices.cli import REPO_DIR, run_command
+from practices.errors import PracticesError, UsageError
 from practices.model import OutputFile
 from practices.output import GENERATED_FOLDER, read_output_tree
 from practices.render import render_all

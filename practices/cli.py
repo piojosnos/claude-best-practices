@@ -10,6 +10,8 @@ import sys
 from pathlib import Path
 from typing import Callable
 
+from practices.errors import PracticesError, UsageError
+
 
 # --------------------------------------------------------------------------------
 # Constants
@@ -19,20 +21,6 @@ REPO_DIR = Path(__file__).resolve().parent.parent
 _USAGE_EXIT_CODE = 2
 _REFUSAL_EXIT_CODE = 1
 _INTERRUPT_EXIT_CODE = 130
-
-
-# --------------------------------------------------------------------------------
-# Errors
-# --------------------------------------------------------------------------------
-
-class PracticesError(Exception):
-    pass
-
-
-class UsageError(Exception):
-    def __init__(self, args_text: str) -> None:
-        super().__init__(args_text)
-        self.args_text = args_text
 
 
 # --------------------------------------------------------------------------------

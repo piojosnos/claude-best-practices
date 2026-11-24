@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from practices.cli import PracticesError
+from practices.errors import PracticesError
 from practices.model import ExtraFile, Rule, Skill
 from practices.reader import read_masters
 

@@ -8,7 +8,7 @@
 import shutil
 from pathlib import Path
 
-from practices.cli import PracticesError
+from practices.errors import PracticesError
 from practices.model import OutputFile
 
 

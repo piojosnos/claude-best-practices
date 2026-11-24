@@ -10,7 +10,7 @@ from pathlib import Path
 
 import jinja2
 
-from practices.cli import PracticesError
+from practices.errors import PracticesError
 from practices.model import OutputFile, Rule, Skill
 from practices.profiles import AGENT_PROFILE_LIST, AgentProfile
 from practices.reader import read_masters
