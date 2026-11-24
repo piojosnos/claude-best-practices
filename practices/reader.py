@@ -82,14 +82,14 @@ def read_rule(repo_dir: Path, master_file: Path) -> Rule:
     master_path = master_file.relative_to(repo_dir).as_posix()
     name = master_file.relative_to(repo_dir / RULES_FOLDER).with_suffix("").as_posix()
     text = _read_text(master_file, master_path)
-    frontmatter, body = split_frontmatter(text, master_path)
+    frontmatter_map, body = split_frontmatter(text, master_path)
 
-    _check_keys(frontmatter, master_path, ALLOWED_RULE_KEY_SET, "rule")
+    _check_keys(frontmatter_map, master_path, ALLOWED_RULE_KEY_SET, "rule")
 
     path_list = []
 
-    if _PATHS_KEY in frontmatter:
-        path_list = check_path_list(frontmatter[_PATHS_KEY], master_path)
+    if _PATHS_KEY in frontmatter_map:
+        path_list = check_path_list(frontmatter_map[_PATHS_KEY], master_path)
 
     body = body.strip("\n")
 
@@ -113,8 +113,8 @@ def _read_text(master_file: Path, master_path: str) -> str:
         raise PracticesError(f"{master_path}: cannot read the file") from e
 
 
-def _check_keys(frontmatter: dict, master_path: str, allowed_key_set: set[str], kind: str) -> None:
-    for key in sorted(frontmatter, key=str):
+def _check_keys(frontmatter_map: dict, master_path: str, allowed_key_set: set[str], kind: str) -> None:
+    for key in sorted(frontmatter_map, key=str):
         if key not in allowed_key_set:
             allowed_text = ", ".join(sorted(allowed_key_set))
 
@@ -186,19 +186,19 @@ def read_skill(repo_dir: Path, skill_dir: Path) -> Skill:
     if not skill_file.is_file():
         raise PracticesError(f"{skill_path}: has no {SKILL_FILE_NAME}")
 
-    frontmatter, body = split_frontmatter(_read_text(skill_file, master_path), master_path)
+    frontmatter_map, body = split_frontmatter(_read_text(skill_file, master_path), master_path)
 
-    _check_keys(frontmatter, master_path, ALLOWED_SKILL_KEY_SET, "skill")
+    _check_keys(frontmatter_map, master_path, ALLOWED_SKILL_KEY_SET, "skill")
 
-    name = frontmatter.get(_NAME_KEY)
+    name = frontmatter_map.get(_NAME_KEY)
 
     _check_name(name, skill_dir.name, master_path)
 
-    description = frontmatter.get(_DESCRIPTION_KEY)
+    description = frontmatter_map.get(_DESCRIPTION_KEY)
 
     _check_description(description, master_path)
 
-    disable_model_invocation = _read_disable_model_invocation(frontmatter, master_path)
+    disable_model_invocation = _read_disable_model_invocation(frontmatter_map, master_path)
 
     body = body.strip("\n")
 
@@ -249,11 +249,11 @@ def _check_description(description: object, master_path: str) -> None:
         )
 
 
-def _read_disable_model_invocation(frontmatter: dict, master_path: str) -> bool | None:
-    if _DISABLE_MODEL_INVOCATION_KEY not in frontmatter:
+def _read_disable_model_invocation(frontmatter_map: dict, master_path: str) -> bool | None:
+    if _DISABLE_MODEL_INVOCATION_KEY not in frontmatter_map:
         return None
 
-    value = frontmatter[_DISABLE_MODEL_INVOCATION_KEY]
+    value = frontmatter_map[_DISABLE_MODEL_INVOCATION_KEY]
 
     if not isinstance(value, bool):
         raise PracticesError(f"{master_path}: {_DISABLE_MODEL_INVOCATION_KEY} must be true or false")
@@ -321,14 +321,14 @@ def split_frontmatter(text: str, master_path: str) -> tuple[dict, str]:
 
 def _parse_block(block: str, master_path: str) -> dict:
     try:
-        parsed = yaml.safe_load(block)
+        parsed_value = yaml.safe_load(block)
     except yaml.YAMLError as e:
         raise PracticesError(f"{master_path}: the frontmatter is not valid YAML") from e
 
-    if parsed is None:
+    if parsed_value is None:
         return {}
 
-    if not isinstance(parsed, dict):
+    if not isinstance(parsed_value, dict):
         raise PracticesError(f"{master_path}: the frontmatter must be a mapping of keys")
 
-    return parsed
+    return parsed_value

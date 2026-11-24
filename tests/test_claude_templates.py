@@ -53,9 +53,9 @@ def test_a_glob_with_a_hash_and_a_quote_survives_the_yaml_round_trip(fixture_rep
 
     _write_master(fixture_repo, "h1.md", f'---\npaths:\n  - "{glob}"\n---\n\n# H1\n\nText h1.\n')
 
-    frontmatter, _ = _split_output(_output_text(fixture_repo, "claude/rules/h1.md"))
+    frontmatter_map, _ = _split_output(_output_text(fixture_repo, "claude/rules/h1.md"))
 
-    assert frontmatter == {"paths": [glob]}
+    assert frontmatter_map == {"paths": [glob]}
 
 
 def test_jinja_syntax_in_a_master_body_renders_literally(fixture_repo: Path) -> None:
@@ -75,9 +75,9 @@ def test_every_real_master_round_trips_through_its_claude_output() -> None:
 
     for rule in read_masters(REPO_DIR).rule_list:
         text = output_by_path_map[f"claude/rules/{rule.name}.md"].content.decode("utf-8")
-        frontmatter, rest = _split_output(text)
+        frontmatter_map, rest = _split_output(text)
 
-        assert frontmatter == _expected_frontmatter(rule), rule.name
+        assert frontmatter_map == _expected_frontmatter_map(rule), rule.name
         assert rest.split("\n")[0] == _header_line(rule), rule.name
 
 
@@ -108,12 +108,12 @@ def _split_output(text: str) -> tuple[dict | None, str]:
         return None, text
 
     closing_index = line_list.index("---", 1)
-    frontmatter = yaml.safe_load("\n".join(line_list[1:closing_index]))
+    frontmatter_map = yaml.safe_load("\n".join(line_list[1:closing_index]))
 
-    return frontmatter, "\n".join(line_list[closing_index + 1:])
+    return frontmatter_map, "\n".join(line_list[closing_index + 1:])
 
 
-def _expected_frontmatter(rule: Rule) -> dict | None:
+def _expected_frontmatter_map(rule: Rule) -> dict | None:
     if not rule.path_list:
         return None
 

@@ -39,9 +39,9 @@ def test_the_skill_file_is_the_frontmatter_the_header_and_the_body(fixture_repo:
 
 @pytest.mark.parametrize("agent_name", AGENT_NAME_LIST)
 def test_the_skill_frontmatter_round_trips_through_yaml(fixture_repo: Path, agent_name: str) -> None:
-    frontmatter = _frontmatter(_output_text(fixture_repo, f"{agent_name}/skills/a/SKILL.md"))
+    frontmatter_map = _frontmatter_map(_output_text(fixture_repo, f"{agent_name}/skills/a/SKILL.md"))
 
-    assert frontmatter == {"name": "a", "description": 'Skill a1 does "a1" work. Use when a1.'}
+    assert frontmatter_map == {"name": "a", "description": 'Skill a1 does "a1" work. Use when a1.'}
 
 
 @pytest.mark.parametrize("agent_name", AGENT_NAME_LIST)
@@ -85,7 +85,7 @@ def test_the_disable_model_invocation_flag_is_passed_through_as_a_boolean(
     assert output_text == EXPECTED_SKILL_A.replace(
         "---\n<!--", f"disable-model-invocation: {flag_text}\n---\n<!--", 1
     )
-    assert _frontmatter(output_text)["disable-model-invocation"] is (flag_text == "true")
+    assert _frontmatter_map(output_text)["disable-model-invocation"] is (flag_text == "true")
 
 
 # --------------------------------------------------------------------------------
@@ -100,10 +100,10 @@ def test_every_real_skill_keeps_its_frontmatter_for_each_agent(agent_name: str) 
     assert skill_dir_list
 
     for skill_dir in skill_dir_list:
-        master_frontmatter = _frontmatter((skill_dir / "SKILL.md").read_text(encoding="utf-8"))
+        master_frontmatter_map = _frontmatter_map((skill_dir / "SKILL.md").read_text(encoding="utf-8"))
         output_text = output_by_path_map[f"{agent_name}/skills/{skill_dir.name}/SKILL.md"].content.decode("utf-8")
 
-        assert _frontmatter(output_text) == master_frontmatter
+        assert _frontmatter_map(output_text) == master_frontmatter_map
 
 
 # --------------------------------------------------------------------------------
@@ -114,7 +114,7 @@ def _output_text(repo_dir: Path, output_path: str) -> str:
     return render_repo(repo_dir)[output_path].content.decode("utf-8")
 
 
-def _frontmatter(text: str) -> dict:
+def _frontmatter_map(text: str) -> dict:
     block = text.split("\n---\n")[0].removeprefix("---\n")
 
     return yaml.safe_load(block)
