@@ -36,6 +36,13 @@ Applies to every language. In brace languages it looks like the bullets below; i
 - Blank line before every `for` / `while` / `if` / `do`, and after its closing brace, so control-flow boundaries are scannable.
 - Exceptions (cuddle, no blank line): `} else if {` / `} else {` chains stay attached to the prior brace (treat the whole chain as one construct; blank line only after the final outer brace); stacked closing braces `} } }` stay together, with the blank line after the outermost one.
 
+## Separators between members
+
+- Separate every two members (functions, methods, classes) with one full-width comment rule on its own line, with no title. It shows at a glance where one member ends and the next begins.
+- Exceptions: a getter and setter pair, and members that are variants of one thing (overloads: the same name with other arguments). Keep those together without a rule between them.
+- A titled section banner already separates; no member rule goes directly under one.
+- Each language rule gives the syntax.
+
 ## Comments
 
 - No "rationale of past changes" comments (`// was X`, `// pre-N this did Y`). They rot and add nothing over `git log` and `git blame`.

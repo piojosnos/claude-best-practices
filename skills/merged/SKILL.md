@@ -18,12 +18,17 @@ piece of work. It changes branches and pulls; it never merges, pushes, or edits 
 
 The "target" is the PR's base, not the feature branch that was merged.
 
-1. If an argument was given, use it as `TARGET` and skip detection.
+1. If an argument was given, use it as `TARGET` and skip detection. Record the
+   current branch as `FEATURE_BRANCH` now, before any switch:
+   ```bash
+   FEATURE_BRANCH="$(git branch --show-current)"
+   ```
 2. Otherwise detect from the current branch's PR:
    ```bash
    gh pr view --json number,state,baseRefName,headRefName,mergedAt,url
    ```
-   - If `state` is `MERGED`: `TARGET = baseRefName`. Report the PR number and title.
+   - If `state` is `MERGED`: `TARGET = baseRefName` and `FEATURE_BRANCH = headRefName`.
+     Report the PR number and title.
    - If `state` is `OPEN`: STOP. Tell the user the PR for this branch is not merged
      yet; ask whether they merged a different PR (then re-run as `/merged <target>`).
    - If no PR is found for the current branch: ask the user for the target branch
@@ -57,7 +62,8 @@ git pull --ff-only origin "$TARGET"
 
 ## Step 4: Delete the stale feature branch
 
-The merged feature branch (`headRefName` from Step 1) is now redundant locally.
+The merged feature branch (`FEATURE_BRANCH` from Step 1) is now redundant locally.
+If `FEATURE_BRANCH` equals `TARGET` or is empty, skip this step.
 
 ```bash
 git branch --merged "$TARGET" | grep -F "$FEATURE_BRANCH"
@@ -80,10 +86,11 @@ git branch --merged "$TARGET" | grep -F "$FEATURE_BRANCH"
 Load the current roadmap position:
 
 ```bash
-node "$HOME/.claude/gsd-core/bin/gsd-tools.cjs" query progress 2>/dev/null
+gsd-tools query progress 2>/dev/null
 ```
 
-If that query is unavailable, fall back to the roadmap file directly.
+If `gsd-tools` is not on the `PATH` (`command -v gsd-tools` prints nothing) or the
+query fails, skip it and read the roadmap file directly, as below.
 
 ### 5a: Gather the remaining (incomplete) phases with descriptions
 
@@ -118,10 +125,10 @@ Local <target-branch> synced to <short-sha> <subject>.
 Phase <X>: <name>
 
 ### What's next
-<one recommended command, matched to the NEXT phase's state:>
-- not planned yet -> /gsd-discuss-phase <Y>   (or /gsd-plan-phase <Y>)
-- planned         -> /gsd-execute-phase <Y>
-- mid-phase       -> /gsd-resume-work
+<one recommended skill, matched to the NEXT phase's state:>
+- not planned yet -> the gsd-discuss-phase skill for <Y>   (or gsd-plan-phase)
+- planned         -> the gsd-execute-phase skill for <Y>
+- mid-phase       -> the gsd-resume-work skill
 
 ### Remaining phases
 | Phase | Name | What it does | State |
@@ -135,5 +142,5 @@ Rules:
   a real one-to-two-line description drawn from ROADMAP (not just the title).
 - If the arc is large, group the table by sub-arc (e.g. an `N.1.x` cleanup block and an
   `N.2+` feature block) with a subheading per group; keep descriptions concise.
-- Recommend exactly ONE command (for the next phase); do not list every GSD command.
+- Recommend exactly ONE skill (for the next phase); do not list every GSD skill.
 - Do not start the next phase automatically; the user decides.

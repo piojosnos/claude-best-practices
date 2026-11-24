@@ -1,0 +1,11 @@
+---
+{% if rule.path_list %}
+globs: {{ rule.path_list | join(", ") }}
+alwaysApply: false
+{% else %}
+alwaysApply: true
+{% endif %}
+---
+{% include "_generated_header.j2" %}
+
+{{ rule.body }}

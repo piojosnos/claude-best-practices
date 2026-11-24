@@ -90,8 +90,9 @@ says they have responded on the PR, re-fetch and reconcile before doing anything
    and avoids re-touching the same file repeatedly. Verify behavior-preserving changes
    actually preserve behavior (e.g. regenerate output and diff, or run the build/tests)
    before moving on.
-   Follow the repo's CLAUDE.md conventions and branch protocol (feature branch; push
-   only on explicit per-branch go; never merge the PR).
+   Follow the conventions in the repo's agent instructions file (`CLAUDE.md`,
+   `AGENTS.md`) and its branch protocol (feature branch; push only on explicit
+   per-branch go; never merge the PR).
 
 7. Push only after the user's explicit per-branch go. Commit refs are not meaningful on
    the PR until pushed, so do NOT post "done" replies referencing a commit before the

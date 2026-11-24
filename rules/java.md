@@ -41,7 +41,7 @@ This is the general "prefer imperative over functional-chain style" rule (see co
 
 ## Separators between members
 
-- Separate members with a full-width comment rule: `//`, a space and 80 hyphens (83 columns at column 0; `// --------...`), on its own line at the member's indentation. Shell and Python banners use the same 80 hyphens after `# `.
+- Separate members as the general coding rule says, with a full-width comment rule: `//`, a space and 80 hyphens (83 columns at column 0; `// --------...`), on its own line at the member's indentation. Shell and Python banners use the same 80 hyphens after `# `.
 
 ## Imports
 

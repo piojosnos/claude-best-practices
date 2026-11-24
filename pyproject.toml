@@ -1,0 +1,36 @@
+# The generator and its tests run through "uv run --locked", so a stale uv.lock
+# fails instead of being rewritten.
+
+[project]
+name = "practices-generator"
+version = "0"
+requires-python = ">=3.12"
+dependencies = ["jinja2==3.1.6", "pyyaml==6.0.3"]
+
+[dependency-groups]
+dev = [
+    "pytest==9.2.0",
+    "ruff==0.17.5",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 120
+extend-exclude = ["./generated"]
+
+[tool.ruff.lint]
+# E, F and I catch errors and keep imports tidy; B, UP, PTH, ARG and RUF add likely
+# bugs, outdated syntax, pathlib over os.path, unused arguments and ruff's own checks.
+# SIM and PL are left out: SIM pushes comprehensions and any() over plain loops,
+# and PL flags literal numbers in test asserts.
+select = ["E", "F", "I", "B", "UP", "PTH", "ARG", "RUF"]
+
+[tool.ruff.lint.isort]
+lines-after-imports = 2
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-p no:cacheprovider"
