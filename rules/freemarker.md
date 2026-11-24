@@ -1,6 +1,7 @@
 ---
 paths:
   - "**/*.ftl"
+  - "**/*.ftl.*"
 ---
 
 # FreeMarker templates
