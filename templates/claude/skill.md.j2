@@ -1,6 +1,9 @@
 ---
 name: {{ skill.name }}
 description: {{ skill.description | yaml_str }}
+{% if skill.disable_model_invocation is not none %}
+disable-model-invocation: {{ "true" if skill.disable_model_invocation else "false" }}
+{% endif %}
 ---
 {% include "_generated_header.j2" %}
 

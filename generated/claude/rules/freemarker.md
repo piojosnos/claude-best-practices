@@ -1,6 +1,7 @@
 ---
 paths:
   - "**/*.ftl"
+  - "**/*.ftl.*"
 ---
 <!-- GENERATED from rules/freemarker.md; edit that file and regenerate -->
 

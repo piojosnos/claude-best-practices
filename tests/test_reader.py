@@ -76,7 +76,7 @@ BROKEN_SKILL_MASTER_LIST = [
     (
         "x1",
         "---\nname: x1\ndescription: d1\nlicense: l1\n---\n\n# X1\n\nText x1.\n",
-        "skills/x1/SKILL.md: unknown frontmatter key 'license'; a skill allows only: description, name",
+        "skills/x1/SKILL.md: unknown frontmatter key 'license'; a skill allows only: description, disable-model-invocation, name",
     ),
     (
         "x1",
@@ -122,6 +122,16 @@ BROKEN_SKILL_MASTER_LIST = [
         "x1",
         "---\nname: x1\ndescription: d1\n---\n",
         "skills/x1/SKILL.md: the master has no text",
+    ),
+    (
+        "x1",
+        "---\nname: x1\ndescription: d1\ndisable-model-invocation: maybe\n---\n\n# X1\n\nText x1.\n",
+        "skills/x1/SKILL.md: disable-model-invocation must be true or false",
+    ),
+    (
+        "x1",
+        "---\nname: x1\ndescription: d1\ndisable-model-invocation: 1\n---\n\n# X1\n\nText x1.\n",
+        "skills/x1/SKILL.md: disable-model-invocation must be true or false",
     ),
 ]
 
@@ -184,6 +194,22 @@ def test_reader_returns_a_typed_skill_of_the_fixture_master(fixture_repo: Path) 
             [ExtraFile("extra1.txt", b"extra a1\n", False)],
         )
     ]
+
+
+@pytest.mark.parametrize("text, expected", [("true", True), ("false", False)])
+def test_reader_reads_the_disable_model_invocation_flag_of_a_skill(
+    fixture_repo: Path, text: str, expected: bool
+) -> None:
+    _write_skill(
+        fixture_repo,
+        "x1",
+        f"---\nname: x1\ndescription: d1\ndisable-model-invocation: {text}\n---\n\n# X1\n\nText x1.\n",
+    )
+
+    skill_by_name_map = {skill.name: skill for skill in read_masters(fixture_repo).skill_list}
+
+    assert skill_by_name_map["x1"].disable_model_invocation is expected
+    assert skill_by_name_map["a"].disable_model_invocation is None
 
 
 def test_a_skill_extra_file_in_a_subfolder_keeps_its_relative_path_and_exec_bit(fixture_repo: Path) -> None:

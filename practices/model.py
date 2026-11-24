@@ -31,6 +31,7 @@ class Skill:
     description: str
     body: str
     extra_file_list: list[ExtraFile]
+    disable_model_invocation: bool | None = None
 
 
 @dataclass(frozen=True)

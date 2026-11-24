@@ -21,13 +21,14 @@ RULES_FOLDER = "rules"
 SKILLS_FOLDER = "skills"
 SKILL_FILE_NAME = "SKILL.md"
 ALLOWED_RULE_KEY_SET = {"paths"}
-ALLOWED_SKILL_KEY_SET = {"name", "description"}
+ALLOWED_SKILL_KEY_SET = {"name", "description", "disable-model-invocation"}
 MAX_DESCRIPTION_LENGTH = 1024
 MAX_SKILL_NAME_LENGTH = 64
 _FRONTMATTER_FENCE = "---"
 _PATHS_KEY = "paths"
 _NAME_KEY = "name"
 _DESCRIPTION_KEY = "description"
+_DISABLE_MODEL_INVOCATION_KEY = "disable-model-invocation"
 _OWNER_EXEC_BIT = 0o100
 
 
@@ -197,12 +198,21 @@ def read_skill(repo_dir: Path, skill_dir: Path) -> Skill:
 
     _check_description(description, master_path)
 
+    disable_model_invocation = _read_disable_model_invocation(frontmatter, master_path)
+
     body = body.strip("\n")
 
     if not body.strip():
         raise PracticesError(f"{master_path}: the master has no text")
 
-    return Skill(name, master_path, description, body, _read_extra_file_list(skill_dir, skill_path))
+    return Skill(
+        name,
+        master_path,
+        description,
+        body,
+        _read_extra_file_list(skill_dir, skill_path),
+        disable_model_invocation,
+    )
 
 
 def _check_name(name: object, folder_name: str, master_path: str) -> None:
@@ -237,6 +247,18 @@ def _check_description(description: object, master_path: str) -> None:
         raise PracticesError(
             f"{master_path}: description must be text of 1 to {MAX_DESCRIPTION_LENGTH} characters"
         )
+
+
+def _read_disable_model_invocation(frontmatter: dict, master_path: str) -> bool | None:
+    if _DISABLE_MODEL_INVOCATION_KEY not in frontmatter:
+        return None
+
+    value = frontmatter[_DISABLE_MODEL_INVOCATION_KEY]
+
+    if not isinstance(value, bool):
+        raise PracticesError(f"{master_path}: {_DISABLE_MODEL_INVOCATION_KEY} must be true or false")
+
+    return value
 
 
 def _read_extra_file_list(skill_dir: Path, skill_path: str) -> list[ExtraFile]:

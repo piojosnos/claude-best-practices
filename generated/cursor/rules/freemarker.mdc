@@ -1,5 +1,5 @@
 ---
-globs: **/*.ftl
+globs: **/*.ftl, **/*.ftl.*
 alwaysApply: false
 ---
 <!-- GENERATED from rules/freemarker.md; edit that file and regenerate -->

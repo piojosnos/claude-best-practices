@@ -67,12 +67,32 @@ def test_an_executable_extra_file_keeps_its_exec_bit_on_disk(fixture_repo: Path)
         assert (fixture_repo / "generated" / agent_name / "skills" / "a" / "tool1").stat().st_mode & 0o100
 
 
+@pytest.mark.parametrize("flag_text", ["true", "false"])
+@pytest.mark.parametrize("agent_name", AGENT_NAME_LIST)
+def test_the_disable_model_invocation_flag_is_passed_through_as_a_boolean(
+    fixture_repo: Path, agent_name: str, flag_text: str
+) -> None:
+    skill_file = fixture_repo / "skills" / "a" / "SKILL.md"
+    master_text = skill_file.read_text(encoding="utf-8")
+
+    skill_file.write_text(
+        master_text.replace("---\n\n", f"disable-model-invocation: {flag_text}\n---\n\n", 1), encoding="utf-8"
+    )
+
+    output_text = _output_text(fixture_repo, f"{agent_name}/skills/a/SKILL.md")
+
+    assert output_text == EXPECTED_SKILL_A.replace(
+        "---\n<!--", f"disable-model-invocation: {flag_text}\n---\n<!--", 1
+    )
+    assert _frontmatter(output_text)["disable-model-invocation"] is (flag_text == "true")
+
+
 # --------------------------------------------------------------------------------
 # Real skill masters
 # --------------------------------------------------------------------------------
 
 @pytest.mark.parametrize("agent_name", AGENT_NAME_LIST)
-def test_every_real_skill_keeps_its_name_and_description_for_each_agent(agent_name: str) -> None:
+def test_every_real_skill_keeps_its_frontmatter_for_each_agent(agent_name: str) -> None:
     output_by_path_map = render_all(REPO_DIR)
     skill_dir_list = _real_skill_dir_list()
 
@@ -82,10 +102,7 @@ def test_every_real_skill_keeps_its_name_and_description_for_each_agent(agent_na
         master_frontmatter = _frontmatter((skill_dir / "SKILL.md").read_text(encoding="utf-8"))
         output_text = output_by_path_map[f"{agent_name}/skills/{skill_dir.name}/SKILL.md"].content.decode("utf-8")
 
-        assert _frontmatter(output_text) == {
-            "name": master_frontmatter["name"],
-            "description": master_frontmatter["description"],
-        }
+        assert _frontmatter(output_text) == master_frontmatter
 
 
 # --------------------------------------------------------------------------------
