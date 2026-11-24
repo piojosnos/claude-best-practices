@@ -21,14 +21,14 @@ def test_layout_mirrors_each_agent_config_folder(fixture_repo: Path) -> None:
     generate.main([], fixture_repo)
 
     assert list(snapshot_generated(fixture_repo)) == [
-        "claude/rules/a.md",
-        "claude/rules/b.md",
-        "claude/skills/a/SKILL.md",
-        "claude/skills/a/extra1.txt",
-        "cursor/rules/a.mdc",
-        "cursor/rules/b.mdc",
-        "cursor/skills/a/SKILL.md",
-        "cursor/skills/a/extra1.txt",
+        "claude/rules/bp-a.md",
+        "claude/rules/bp-b.md",
+        "claude/skills/bp-a/SKILL.md",
+        "claude/skills/bp-a/extra1.txt",
+        "cursor/rules/bp-a.mdc",
+        "cursor/rules/bp-b.mdc",
+        "cursor/skills/bp-a/SKILL.md",
+        "cursor/skills/bp-a/extra1.txt",
     ]
 
 
@@ -71,7 +71,7 @@ def test_a_write_that_fails_midway_leaves_generated_and_the_repo_as_they_were(fi
 def test_reading_refuses_a_link_under_generated(fixture_repo: Path) -> None:
     generate.main([], fixture_repo)
 
-    (fixture_repo / "generated/claude/rules/l1.md").symlink_to(fixture_repo / "generated/claude/rules/a.md")
+    (fixture_repo / "generated/claude/rules/l1.md").symlink_to(fixture_repo / "generated/claude/rules/bp-a.md")
 
     with pytest.raises(PracticesError) as raised:
         read_generated_folder(fixture_repo)

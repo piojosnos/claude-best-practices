@@ -45,14 +45,14 @@ def test_no_master_names_an_agent_path_or_tool() -> None:
 
 def test_the_master_walk_skips_hidden_and_binary_files(fixture_repo: Path) -> None:
     (fixture_repo / "rules" / ".DS_Store").write_bytes(b"\xff\xfe")
-    (fixture_repo / "skills" / "a" / ".DS_Store").write_bytes(b"\xff\xfe")
-    (fixture_repo / "skills" / "a" / "blob1.bin").write_bytes(b"\xff\xfe")
+    (fixture_repo / "skills" / "bp-a" / ".DS_Store").write_bytes(b"\xff\xfe")
+    (fixture_repo / "skills" / "bp-a" / "blob1.bin").write_bytes(b"\xff\xfe")
 
     assert list(_master_text_by_path_map(fixture_repo)) == [
-        "rules/a.md",
-        "rules/b.md",
-        "skills/a/SKILL.md",
-        "skills/a/extra1.txt",
+        "rules/bp-a.md",
+        "rules/bp-b.md",
+        "skills/bp-a/SKILL.md",
+        "skills/bp-a/extra1.txt",
     ]
 
 
