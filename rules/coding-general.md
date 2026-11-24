@@ -159,3 +159,5 @@ Write scripts that hold logic in Python, not shell: CLIs, file and folder checks
 - Pin the Python version and the dependencies with the project's tooling, so nobody manages an environment by hand.
 - Test that logic with pytest, not shell harnesses.
 - Keep config and state files structured (JSON), not line formats parsed by hand.
+
+Why: shell logic grows into long, fragile scripts whose tests outgrow the code.
