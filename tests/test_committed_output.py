@@ -5,10 +5,13 @@
 import subprocess
 from pathlib import Path
 
+import pytest
+
 from practices.check import find_drift
 from practices.cli import REPO_DIR
 from practices.output import GENERATED_FOLDER
-from practices.reader import read_masters
+from practices.profiles import AGENT_PROFILE_LIST
+from practices.reader import SKILL_FILE_NAME, read_masters
 from tests.helpers import render_repo
 
 
@@ -20,11 +23,16 @@ AGENT_NAME_LIST = ["claude", "cursor"]
 # --------------------------------------------------------------------------------
 
 def test_generated_output_is_tracked_and_not_ignored() -> None:
-    tracked_result = _git("ls-files", "--", GENERATED_FOLDER)
+    if _git("rev-parse", "--is-inside-work-tree").returncode != 0:
+        pytest.skip("not a git checkout")
 
-    assert tracked_result.stdout.strip()
+    rendered_path_set = set(render_repo(REPO_DIR))
+    tracked_path_set = _tracked_output_path_set()
 
-    for output_path in render_repo(REPO_DIR):
+    assert sorted(rendered_path_set - tracked_path_set) == [], "rendered but not tracked: git add generated"
+    assert sorted(tracked_path_set - rendered_path_set) == [], "tracked but no longer rendered"
+
+    for output_path in sorted(rendered_path_set):
         ignored_result = _git("check-ignore", "--no-index", f"{GENERATED_FOLDER}/{output_path}")
 
         assert ignored_result.returncode == 1, f"{GENERATED_FOLDER}/{output_path} is ignored"
@@ -35,15 +43,17 @@ def test_generated_output_is_tracked_and_not_ignored() -> None:
 # --------------------------------------------------------------------------------
 
 def test_every_rendered_file_carries_the_header_of_its_master() -> None:
-    header_file_list = _rendered_header_file_list()
+    master_path_by_output_path_map = _master_path_by_output_path_map()
 
-    assert header_file_list
+    assert master_path_by_output_path_map
 
-    for output_file, master_path in header_file_list:
+    for output_path, master_path in master_path_by_output_path_map.items():
+        output_file = REPO_DIR / GENERATED_FOLDER / output_path
+
         assert (REPO_DIR / master_path).is_file(), f"{master_path}: the master does not exist"
         assert _first_line_after_frontmatter(output_file) == (
             f"<!-- GENERATED from {master_path}; edit that file and regenerate -->"
-        ), f"{output_file.relative_to(REPO_DIR).as_posix()}: wrong header"
+        ), f"{GENERATED_FOLDER}/{output_path}: wrong header"
 
 
 # --------------------------------------------------------------------------------
@@ -87,19 +97,30 @@ def _git(*argument_list: str) -> subprocess.CompletedProcess:
     )
 
 
-def _rendered_header_file_list() -> list[tuple[Path, str]]:
-    header_file_list = []
+def _tracked_output_path_set() -> set[str]:
+    tracked_path_set = set()
+    prefix = f"{GENERATED_FOLDER}/"
 
-    for agent_name in AGENT_NAME_LIST:
-        agent_dir = REPO_DIR / GENERATED_FOLDER / agent_name
+    for line in _git("ls-files", "--", GENERATED_FOLDER).stdout.splitlines():
+        tracked_path_set.add(line.removeprefix(prefix))
 
-        for rule_file in sorted((agent_dir / "rules").iterdir()):
-            header_file_list.append((rule_file, f"rules/{rule_file.stem}.md"))
+    return tracked_path_set
 
-        for skill_dir in sorted((agent_dir / "skills").iterdir()):
-            header_file_list.append((skill_dir / "SKILL.md", f"skills/{skill_dir.name}/SKILL.md"))
 
-    return header_file_list
+def _master_path_by_output_path_map() -> dict[str, str]:
+    masters = read_masters(REPO_DIR)
+    master_path_by_output_path_map = {}
+
+    for profile in AGENT_PROFILE_LIST:
+        for rule in masters.rule_list:
+            output_path = f"{profile.name}/{profile.rule_folder}/{rule.name}{profile.rule_extension}"
+            master_path_by_output_path_map[output_path] = rule.master_path
+
+        for skill in masters.skill_list:
+            output_path = f"{profile.name}/{profile.skill_folder}/{skill.name}/{SKILL_FILE_NAME}"
+            master_path_by_output_path_map[output_path] = skill.master_path
+
+    return master_path_by_output_path_map
 
 
 def _first_line_after_frontmatter(output_file: Path) -> str:
