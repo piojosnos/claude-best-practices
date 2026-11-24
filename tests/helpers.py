@@ -4,13 +4,21 @@
 
 from pathlib import Path
 
+from practices.generated.drift_finder import find_drift
 from practices.generated.generated_file import GeneratedFile
+from practices.generated.generated_folder import read_generated_folder
 from practices.masters.masters_reader import read_masters
 from practices.rendering.renderer import render_all
 
 
 def render_repo(repo_dir: Path) -> dict[str, GeneratedFile]:
     return render_all(read_masters(repo_dir), repo_dir)
+
+
+# --------------------------------------------------------------------------------
+
+def find_repo_drift(repo_dir: Path) -> list[str]:
+    return find_drift(render_repo(repo_dir), read_generated_folder(repo_dir))
 
 
 # --------------------------------------------------------------------------------

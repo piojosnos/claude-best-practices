@@ -8,12 +8,11 @@ from pathlib import Path
 import pytest
 
 from practices.command.command_runner import REPO_DIR
-from practices.generated.drift_finder import find_drift
 from practices.generated.generated_folder import GENERATED_FOLDER
 from practices.masters.masters_reader import read_masters
 from practices.masters.skill_reader import SKILL_FILE_NAME
 from practices.rendering.agent_profile import AGENT_PROFILE_LIST
-from tests.helpers import render_repo
+from tests.helpers import find_repo_drift, render_repo
 
 
 AGENT_NAME_LIST = ["claude", "cursor"]
@@ -62,7 +61,7 @@ def test_every_rendered_file_carries_the_header_of_its_master() -> None:
 # --------------------------------------------------------------------------------
 
 def test_committed_output_has_no_drift() -> None:
-    assert find_drift(REPO_DIR) == []
+    assert find_repo_drift(REPO_DIR) == []
 
 
 # --------------------------------------------------------------------------------

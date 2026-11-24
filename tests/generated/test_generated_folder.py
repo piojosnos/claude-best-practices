@@ -6,10 +6,11 @@ from pathlib import Path
 
 import pytest
 
-from practices import check, generate
+from practices import generate
+from practices.error.practices_error import PracticesError
 from practices.generated.generated_file import GeneratedFile
-from practices.generated.generated_folder import write_generated_folder
-from tests.helpers import render_repo, snapshot_generated, write_master
+from practices.generated.generated_folder import read_generated_folder, write_generated_folder
+from tests.helpers import snapshot_generated
 
 
 # --------------------------------------------------------------------------------
@@ -29,18 +30,6 @@ def test_layout_mirrors_each_agent_config_folder(fixture_repo: Path) -> None:
         "cursor/skills/a/SKILL.md",
         "cursor/skills/a/extra1.txt",
     ]
-
-
-# --------------------------------------------------------------------------------
-
-def test_output_keys_are_sorted_whatever_the_creation_order(fixture_repo: Path) -> None:
-    write_master(fixture_repo, "z1.md", "# R1\n\nText r1.\n")
-    write_master(fixture_repo, "c1.md", "# R1\n\nText r1.\n")
-
-    output_path_list = list(render_repo(fixture_repo))
-
-    assert output_path_list == sorted(output_path_list)
-    assert "claude/rules/c1.md" in output_path_list
 
 
 # --------------------------------------------------------------------------------
@@ -79,19 +68,15 @@ def test_a_write_that_fails_midway_leaves_generated_and_the_repo_as_they_were(fi
 # Links
 # --------------------------------------------------------------------------------
 
-def test_check_refuses_generated_when_it_is_a_link(fixture_repo: Path, capsys) -> None:
+def test_reading_refuses_a_link_under_generated(fixture_repo: Path) -> None:
     generate.main([], fixture_repo)
-    capsys.readouterr()
 
-    (fixture_repo / "generated").rename(fixture_repo / "real_gen1")
-    (fixture_repo / "generated").symlink_to(fixture_repo / "real_gen1")
+    (fixture_repo / "generated/claude/rules/l1.md").symlink_to(fixture_repo / "generated/claude/rules/a.md")
 
-    assert check.main([], fixture_repo) == 1
+    with pytest.raises(PracticesError) as raised:
+        read_generated_folder(fixture_repo)
 
-    captured = capsys.readouterr()
-
-    assert captured.out == ""
-    assert "generated is a link" in captured.err
+    assert "generated/claude/rules/l1.md is a link" in str(raised.value)
 
 
 # --------------------------------------------------------------------------------

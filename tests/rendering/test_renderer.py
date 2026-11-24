@@ -131,6 +131,18 @@ def test_every_output_ends_with_exactly_one_newline(fixture_repo: Path) -> None:
 
 
 # --------------------------------------------------------------------------------
+
+def test_output_keys_are_sorted_whatever_the_creation_order(fixture_repo: Path) -> None:
+    write_master(fixture_repo, "z1.md", "# R1\n\nText r1.\n")
+    write_master(fixture_repo, "c1.md", "# R1\n\nText r1.\n")
+
+    output_path_list = list(render_repo(fixture_repo))
+
+    assert output_path_list == sorted(output_path_list)
+    assert "claude/rules/c1.md" in output_path_list
+
+
+# --------------------------------------------------------------------------------
 # Cursor rules
 # --------------------------------------------------------------------------------
 # The globs line is comma separated text, not YAML, so these tests read lines and

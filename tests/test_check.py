@@ -50,3 +50,20 @@ def test_check_with_a_broken_master_prints_the_reader_message(fixture_repo: Path
 def test_check_refuses_an_argument(fixture_repo: Path, capsys) -> None:
     assert check.main(["extra"], fixture_repo) == 2
     assert capsys.readouterr().err == "Usage: practices.check\n"
+
+
+# --------------------------------------------------------------------------------
+
+def test_check_refuses_generated_when_it_is_a_link(fixture_repo: Path, capsys) -> None:
+    generate.main([], fixture_repo)
+    capsys.readouterr()
+
+    (fixture_repo / "generated").rename(fixture_repo / "real_gen1")
+    (fixture_repo / "generated").symlink_to(fixture_repo / "real_gen1")
+
+    assert check.main([], fixture_repo) == 1
+
+    captured = capsys.readouterr()
+
+    assert captured.out == ""
+    assert "generated is a link" in captured.err

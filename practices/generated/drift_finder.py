@@ -5,22 +5,18 @@
 # --------------------------------------------------------------------------------
 
 import difflib
-from pathlib import Path
 
 from practices.generated.generated_file import GeneratedFile
-from practices.generated.generated_folder import GENERATED_FOLDER, read_generated_folder
-from practices.masters.masters_reader import read_masters
-from practices.rendering.renderer import render_all
+from practices.generated.generated_folder import GENERATED_FOLDER
 
 
 # --------------------------------------------------------------------------------
 # Finding drift
 # --------------------------------------------------------------------------------
 
-def find_drift(repo_dir: Path) -> list[str]:
-    masters = read_masters(repo_dir)
-    expected_by_path_map = render_all(masters, repo_dir)
-    actual_by_path_map = read_generated_folder(repo_dir)
+def find_drift(
+    expected_by_path_map: dict[str, GeneratedFile], actual_by_path_map: dict[str, GeneratedFile]
+) -> list[str]:
     drift_list = []
 
     for generated_path in sorted(set(expected_by_path_map) | set(actual_by_path_map)):
