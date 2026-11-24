@@ -19,7 +19,7 @@ paths:
 
 ## File layout: the TDL split
 
-- Split a test class with a `// TDL` banner line: `@Test` methods above it, builders and helper utilities below it. A reader scans the behavior first and drops into the scaffolding only when needed.
+- Split a test class with a framed `// TDL` banner (see "Test file layout: the TDL split" in coding-general): `@Test` methods above it, builders and helper utilities below it.
 
 ## Naming
 

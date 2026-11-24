@@ -42,6 +42,11 @@ paths:
 - Parameterized queries only. Never build SQL with string formatting.
 - Create connections in one place (a DAO or service) and pass them in. Do not scatter `connect()` calls.
 
+## Linting
+
+- Run the linter inside the project's test gate script, so a finding fails the gate like a failing test.
+- Configure it to match the code (line length, import style) and exclude generated code.
+
 ## Testing
 
 - Use pytest. Shared setup (connections, cleanup, config overrides) lives in `conftest.py` fixtures, so test files hold the assertions.
