@@ -20,7 +20,7 @@ from practices.reader import SKILL_FILE_NAME
 # Constants
 # --------------------------------------------------------------------------------
 
-TEMPLATES_FOLDER = "templates"
+_TEMPLATES_FOLDER = "templates"
 
 
 # --------------------------------------------------------------------------------
@@ -30,7 +30,7 @@ TEMPLATES_FOLDER = "templates"
 # StrictUndefined turns a template typo into an error, not an empty value.
 # --------------------------------------------------------------------------------
 
-def build_environment(templates_dir: Path) -> jinja2.Environment:
+def _build_environment(templates_dir: Path) -> jinja2.Environment:
     environment = jinja2.Environment(
         loader=jinja2.FileSystemLoader(str(templates_dir)),
         undefined=jinja2.StrictUndefined,
@@ -53,7 +53,7 @@ def _yaml_str(text: str) -> str:
 # --------------------------------------------------------------------------------
 
 def render_all(masters: Masters, repo_dir: Path) -> dict[str, OutputFile]:
-    environment = build_environment(repo_dir / TEMPLATES_FOLDER)
+    environment = _build_environment(repo_dir / _TEMPLATES_FOLDER)
     output_by_path_map = {}
 
     for profile in AGENT_PROFILE_LIST:

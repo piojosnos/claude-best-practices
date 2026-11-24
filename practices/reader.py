@@ -17,13 +17,13 @@ from practices.model import ExtraFile, Masters, Rule, Skill
 # Constants
 # --------------------------------------------------------------------------------
 
-RULES_FOLDER = "rules"
-SKILLS_FOLDER = "skills"
+_RULES_FOLDER = "rules"
+_SKILLS_FOLDER = "skills"
 SKILL_FILE_NAME = "SKILL.md"
-ALLOWED_RULE_KEY_SET = {"paths"}
-ALLOWED_SKILL_KEY_SET = {"name", "description", "disable-model-invocation"}
-MAX_DESCRIPTION_LENGTH = 1024
-MAX_SKILL_NAME_LENGTH = 64
+_ALLOWED_RULE_KEY_SET = {"paths"}
+_ALLOWED_SKILL_KEY_SET = {"name", "description", "disable-model-invocation"}
+_MAX_DESCRIPTION_LENGTH = 1024
+_MAX_SKILL_NAME_LENGTH = 64
 _FRONTMATTER_FENCE = "---"
 _PATHS_KEY = "paths"
 _NAME_KEY = "name"
@@ -41,10 +41,10 @@ def read_masters(repo_dir: Path) -> Masters:
 
 
 def _read_rule_list(repo_dir: Path) -> list[Rule]:
-    rules_dir = repo_dir / RULES_FOLDER
+    rules_dir = repo_dir / _RULES_FOLDER
 
     if not rules_dir.is_dir():
-        raise PracticesError(f"{RULES_FOLDER}: no such folder in {repo_dir}")
+        raise PracticesError(f"{_RULES_FOLDER}: no such folder in {repo_dir}")
 
     master_file_list = []
 
@@ -55,7 +55,7 @@ def _read_rule_list(repo_dir: Path) -> list[Rule]:
     rule_list = []
 
     for master_file in sorted(master_file_list, key=Path.as_posix):
-        rule_list.append(read_rule(repo_dir, master_file))
+        rule_list.append(_read_rule(repo_dir, master_file))
 
     return rule_list
 
@@ -73,23 +73,23 @@ def _is_master(repo_dir: Path, rules_dir: Path, entry: Path) -> bool:
         return False
 
     if entry.suffix != ".md":
-        raise PracticesError(f"{master_path}: {RULES_FOLDER}/ holds only .md rule files")
+        raise PracticesError(f"{master_path}: {_RULES_FOLDER}/ holds only .md rule files")
 
     return True
 
 
-def read_rule(repo_dir: Path, master_file: Path) -> Rule:
+def _read_rule(repo_dir: Path, master_file: Path) -> Rule:
     master_path = master_file.relative_to(repo_dir).as_posix()
-    name = master_file.relative_to(repo_dir / RULES_FOLDER).with_suffix("").as_posix()
+    name = master_file.relative_to(repo_dir / _RULES_FOLDER).with_suffix("").as_posix()
     text = _read_text(master_file, master_path)
-    frontmatter_map, body = split_frontmatter(text, master_path)
+    frontmatter_map, body = _split_frontmatter(text, master_path)
 
-    _check_keys(frontmatter_map, master_path, ALLOWED_RULE_KEY_SET, "rule")
+    _check_keys(frontmatter_map, master_path, _ALLOWED_RULE_KEY_SET, "rule")
 
     path_list = []
 
     if _PATHS_KEY in frontmatter_map:
-        path_list = check_path_list(frontmatter_map[_PATHS_KEY], master_path)
+        path_list = _check_path_list(frontmatter_map[_PATHS_KEY], master_path)
 
     body = body.strip("\n")
 
@@ -123,7 +123,7 @@ def _check_keys(frontmatter_map: dict, master_path: str, allowed_key_set: set[st
             )
 
 
-def check_path_list(path_list: object, master_path: str) -> list[str]:
+def _check_path_list(path_list: object, master_path: str) -> list[str]:
     if not isinstance(path_list, list) or not path_list:
         raise PracticesError(f"{master_path}: paths must be a non-empty list of globs")
 
@@ -148,16 +148,16 @@ def check_path_list(path_list: object, master_path: str) -> list[str]:
 # --------------------------------------------------------------------------------
 
 def _read_skill_list(repo_dir: Path) -> list[Skill]:
-    skills_dir = repo_dir / SKILLS_FOLDER
+    skills_dir = repo_dir / _SKILLS_FOLDER
 
     if not skills_dir.is_dir():
-        raise PracticesError(f"{SKILLS_FOLDER}: no such folder in {repo_dir}")
+        raise PracticesError(f"{_SKILLS_FOLDER}: no such folder in {repo_dir}")
 
     skill_list = []
 
     for entry in sorted(skills_dir.iterdir(), key=Path.as_posix):
         if _is_skill_dir(repo_dir, entry):
-            skill_list.append(read_skill(repo_dir, entry))
+            skill_list.append(_read_skill(repo_dir, entry))
 
     return skill_list
 
@@ -171,12 +171,12 @@ def _is_skill_dir(repo_dir: Path, entry: Path) -> bool:
     _refuse_link(entry, master_path)
 
     if not entry.is_dir():
-        raise PracticesError(f"{master_path}: {SKILLS_FOLDER}/ holds only skill folders")
+        raise PracticesError(f"{master_path}: {_SKILLS_FOLDER}/ holds only skill folders")
 
     return True
 
 
-def read_skill(repo_dir: Path, skill_dir: Path) -> Skill:
+def _read_skill(repo_dir: Path, skill_dir: Path) -> Skill:
     skill_path = skill_dir.relative_to(repo_dir).as_posix()
     skill_file = skill_dir / SKILL_FILE_NAME
     master_path = f"{skill_path}/{SKILL_FILE_NAME}"
@@ -186,9 +186,9 @@ def read_skill(repo_dir: Path, skill_dir: Path) -> Skill:
     if not skill_file.is_file():
         raise PracticesError(f"{skill_path}: has no {SKILL_FILE_NAME}")
 
-    frontmatter_map, body = split_frontmatter(_read_text(skill_file, master_path), master_path)
+    frontmatter_map, body = _split_frontmatter(_read_text(skill_file, master_path), master_path)
 
-    _check_keys(frontmatter_map, master_path, ALLOWED_SKILL_KEY_SET, "skill")
+    _check_keys(frontmatter_map, master_path, _ALLOWED_SKILL_KEY_SET, "skill")
 
     name = frontmatter_map.get(_NAME_KEY)
 
@@ -223,12 +223,12 @@ def _check_name(name: object, folder_name: str, master_path: str) -> None:
         raise PracticesError(
             f"{master_path}: the name '{folder_name}' breaks the skill name rule: "
             f"lowercase letters and digits in words joined by single hyphens, "
-            f"at most {MAX_SKILL_NAME_LENGTH} characters"
+            f"at most {_MAX_SKILL_NAME_LENGTH} characters"
         )
 
 
 def _is_skill_name(name: str) -> bool:
-    if len(name) > MAX_SKILL_NAME_LENGTH:
+    if len(name) > _MAX_SKILL_NAME_LENGTH:
         return False
 
     for word in name.split("-"):
@@ -242,10 +242,10 @@ def _check_description(description: object, master_path: str) -> None:
     if (
         not isinstance(description, str)
         or not description.strip()
-        or len(description) > MAX_DESCRIPTION_LENGTH
+        or len(description) > _MAX_DESCRIPTION_LENGTH
     ):
         raise PracticesError(
-            f"{master_path}: description must be text of 1 to {MAX_DESCRIPTION_LENGTH} characters"
+            f"{master_path}: description must be text of 1 to {_MAX_DESCRIPTION_LENGTH} characters"
         )
 
 
@@ -303,7 +303,7 @@ def _read_extra_file(entry: Path, relative_path: str, master_path: str) -> Extra
 # Frontmatter
 # --------------------------------------------------------------------------------
 
-def split_frontmatter(text: str, master_path: str) -> tuple[dict, str]:
+def _split_frontmatter(text: str, master_path: str) -> tuple[dict, str]:
     line_list = text.split("\n")
 
     if line_list[0] != _FRONTMATTER_FENCE:

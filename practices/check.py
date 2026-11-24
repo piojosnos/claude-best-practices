@@ -21,7 +21,7 @@ from practices.render import render_all
 # Constants
 # --------------------------------------------------------------------------------
 
-COMMAND_NAME = "practices.check"
+_COMMAND_NAME = "practices.check"
 
 
 # --------------------------------------------------------------------------------
@@ -93,11 +93,11 @@ def _check_tree(argument_list: list[str], repo_dir: Path) -> None:
             "run: uv run --locked python -m practices.generate"
         )
 
-    print(f"{COMMAND_NAME}: {GENERATED_FOLDER}/ matches the masters ({len(read_output_tree(repo_dir))} files)")
+    print(f"{_COMMAND_NAME}: {GENERATED_FOLDER}/ matches the masters ({len(read_output_tree(repo_dir))} files)")
 
 
 def main(argument_list: list[str], repo_dir: Path = REPO_DIR) -> int:
-    return run_command(COMMAND_NAME, partial(_check_tree, argument_list, repo_dir))
+    return run_command(_COMMAND_NAME, partial(_check_tree, argument_list, repo_dir))
 
 
 # --------------------------------------------------------------------------------

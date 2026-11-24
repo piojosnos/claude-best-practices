@@ -27,7 +27,7 @@ _INTERRUPT_EXIT_CODE = 130
 # Running a command
 # --------------------------------------------------------------------------------
 
-def print_notice(command_name: str, text: str) -> None:
+def _print_notice(command_name: str, text: str) -> None:
     print(f"{command_name}: {text}", file=sys.stderr)
 
 
@@ -40,15 +40,15 @@ def run_command(command_name: str, action: Callable[[], None]) -> int:
 
         return _USAGE_EXIT_CODE
     except PracticesError as e:
-        print_notice(command_name, str(e))
+        _print_notice(command_name, str(e))
 
         return _REFUSAL_EXIT_CODE
     except OSError as e:
-        print_notice(command_name, str(e))
+        _print_notice(command_name, str(e))
 
         return _REFUSAL_EXIT_CODE
     except KeyboardInterrupt:
-        print_notice(command_name, "interrupted")
+        _print_notice(command_name, "interrupted")
 
         return _INTERRUPT_EXIT_CODE
 

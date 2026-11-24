@@ -19,8 +19,8 @@ from practices.errors import PracticesError, UsageError
 # Constants
 # --------------------------------------------------------------------------------
 
-COMMAND_NAME = "practices.gate"
-GATE_STEP_LIST = [
+_COMMAND_NAME = "practices.gate"
+_GATE_STEP_LIST = [
     ("ruff", [sys.executable, "-m", "ruff", "check", "."]),
     ("practices.check", [sys.executable, "-m", "practices.check"]),
     ("pytest", [sys.executable, "-m", "pytest", "-q"]),
@@ -36,20 +36,20 @@ def _run_gate(argument_list: list[str], repo_dir: Path, step_list: list[tuple[st
         raise UsageError("")
 
     for step_name, command_list in step_list:
-        print(f"{COMMAND_NAME}: {step_name}", flush=True)
+        print(f"{_COMMAND_NAME}: {step_name}", flush=True)
 
         if subprocess.run(command_list, cwd=repo_dir, check=False).returncode != 0:
             raise PracticesError(f"{step_name} failed")
 
-    print(f"{COMMAND_NAME}: every step passed")
+    print(f"{_COMMAND_NAME}: every step passed")
 
 
 def main(
     argument_list: list[str],
     repo_dir: Path = REPO_DIR,
-    step_list: list[tuple[str, list[str]]] = GATE_STEP_LIST,
+    step_list: list[tuple[str, list[str]]] = _GATE_STEP_LIST,
 ) -> int:
-    return run_command(COMMAND_NAME, partial(_run_gate, argument_list, repo_dir, step_list))
+    return run_command(_COMMAND_NAME, partial(_run_gate, argument_list, repo_dir, step_list))
 
 
 # --------------------------------------------------------------------------------

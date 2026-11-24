@@ -19,7 +19,7 @@ from practices.render import render_all
 # Constants
 # --------------------------------------------------------------------------------
 
-COMMAND_NAME = "practices.generate"
+_COMMAND_NAME = "practices.generate"
 
 
 # --------------------------------------------------------------------------------
@@ -38,11 +38,11 @@ def _generate(argument_list: list[str], repo_dir: Path) -> None:
 
     write_output(repo_dir, output_by_path_map)
 
-    print(f"{COMMAND_NAME}: wrote {len(output_by_path_map)} files under {GENERATED_FOLDER}/")
+    print(f"{_COMMAND_NAME}: wrote {len(output_by_path_map)} files under {GENERATED_FOLDER}/")
 
 
 def main(argument_list: list[str], repo_dir: Path = REPO_DIR) -> int:
-    return run_command(COMMAND_NAME, partial(_generate, argument_list, repo_dir))
+    return run_command(_COMMAND_NAME, partial(_generate, argument_list, repo_dir))
 
 
 # --------------------------------------------------------------------------------
