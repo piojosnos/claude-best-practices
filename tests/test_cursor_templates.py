@@ -9,7 +9,7 @@ from pathlib import Path
 
 from practices.cli import REPO_DIR
 from practices.reader import read_masters
-from practices.render import render_all
+from tests.helpers import render_repo
 
 
 EXPECTED_CURSOR_RULE_A = (
@@ -52,7 +52,7 @@ def test_cursor_rule_with_paths_joins_the_globs_and_is_not_always_apply(fixture_
 # --------------------------------------------------------------------------------
 
 def test_every_real_master_has_its_globs_and_always_apply_lines() -> None:
-    output_by_path_map = render_all(REPO_DIR)
+    output_by_path_map = render_repo(REPO_DIR)
 
     for rule in read_masters(REPO_DIR).rule_list:
         line_list = output_by_path_map[f"cursor/rules/{rule.name}.mdc"].content.decode("utf-8").split("\n")
@@ -76,4 +76,4 @@ def test_every_real_master_has_its_globs_and_always_apply_lines() -> None:
 # --------------------------------------------------------------------------------
 
 def _output_text(repo_dir: Path, output_path: str) -> str:
-    return render_all(repo_dir)[output_path].content.decode("utf-8")
+    return render_repo(repo_dir)[output_path].content.decode("utf-8")

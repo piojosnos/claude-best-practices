@@ -11,7 +11,7 @@ import yaml
 
 from practices import generate
 from practices.cli import REPO_DIR
-from practices.render import render_all
+from tests.helpers import render_repo
 
 
 AGENT_NAME_LIST = ["claude", "cursor"]
@@ -46,7 +46,7 @@ def test_the_skill_frontmatter_round_trips_through_yaml(fixture_repo: Path, agen
 
 @pytest.mark.parametrize("agent_name", AGENT_NAME_LIST)
 def test_an_extra_file_is_copied_byte_for_byte_without_a_header(fixture_repo: Path, agent_name: str) -> None:
-    output_file = render_all(fixture_repo)[f"{agent_name}/skills/a/extra1.txt"]
+    output_file = render_repo(fixture_repo)[f"{agent_name}/skills/a/extra1.txt"]
 
     assert output_file.content == b"extra a1\n"
     assert output_file.executable is False
@@ -61,7 +61,7 @@ def test_an_executable_extra_file_keeps_its_exec_bit_on_disk(fixture_repo: Path)
     assert generate.main([], fixture_repo) == 0
 
     for agent_name in AGENT_NAME_LIST:
-        output_file = render_all(fixture_repo)[f"{agent_name}/skills/a/tool1"]
+        output_file = render_repo(fixture_repo)[f"{agent_name}/skills/a/tool1"]
 
         assert output_file.content == b"#!/bin/sh\n"
         assert output_file.executable is True
@@ -94,7 +94,7 @@ def test_the_disable_model_invocation_flag_is_passed_through_as_a_boolean(
 
 @pytest.mark.parametrize("agent_name", AGENT_NAME_LIST)
 def test_every_real_skill_keeps_its_frontmatter_for_each_agent(agent_name: str) -> None:
-    output_by_path_map = render_all(REPO_DIR)
+    output_by_path_map = render_repo(REPO_DIR)
     skill_dir_list = _real_skill_dir_list()
 
     assert skill_dir_list
@@ -111,7 +111,7 @@ def test_every_real_skill_keeps_its_frontmatter_for_each_agent(agent_name: str) 
 # --------------------------------------------------------------------------------
 
 def _output_text(repo_dir: Path, output_path: str) -> str:
-    return render_all(repo_dir)[output_path].content.decode("utf-8")
+    return render_repo(repo_dir)[output_path].content.decode("utf-8")
 
 
 def _frontmatter(text: str) -> dict:

@@ -8,7 +8,7 @@ from pathlib import Path
 from practices.check import find_drift
 from practices.cli import REPO_DIR
 from practices.reader import read_masters
-from practices.render import render_all
+from tests.helpers import render_repo
 
 
 GENERATED_FOLDER = "generated"
@@ -24,7 +24,7 @@ def test_generated_output_is_tracked_and_not_ignored() -> None:
 
     assert tracked_result.stdout.strip()
 
-    for output_path in render_all(REPO_DIR):
+    for output_path in render_repo(REPO_DIR):
         ignored_result = _git("check-ignore", "--no-index", f"{GENERATED_FOLDER}/{output_path}")
 
         assert ignored_result.returncode == 1, f"{GENERATED_FOLDER}/{output_path} is ignored"

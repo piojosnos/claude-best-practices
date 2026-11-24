@@ -11,6 +11,7 @@ from pathlib import Path
 from practices.cli import REPO_DIR, run_command
 from practices.errors import UsageError
 from practices.output import GENERATED_FOLDER, write_output
+from practices.reader import read_masters
 from practices.render import render_all
 
 
@@ -32,7 +33,8 @@ def _generate(argument_list: list[str], repo_dir: Path) -> None:
     if argument_list:
         raise UsageError("")
 
-    output_by_path_map = render_all(repo_dir)
+    masters = read_masters(repo_dir)
+    output_by_path_map = render_all(masters, repo_dir)
 
     write_output(repo_dir, output_by_path_map)
 

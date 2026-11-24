@@ -11,7 +11,7 @@ import yaml
 from practices.cli import REPO_DIR
 from practices.model import Rule
 from practices.reader import read_masters
-from practices.render import render_all
+from tests.helpers import render_repo
 
 
 EXPECTED_CLAUDE_RULE_A = (
@@ -60,7 +60,7 @@ def test_a_glob_with_a_hash_and_a_quote_survives_the_yaml_round_trip(fixture_rep
 
 def test_jinja_syntax_in_a_master_body_renders_literally(fixture_repo: Path) -> None:
     _write_master(fixture_repo, "l1.md", f"# L1\n\n{JINJA_BODY_LINE}\n")
-    output_by_path_map = render_all(fixture_repo)
+    output_by_path_map = render_repo(fixture_repo)
 
     assert JINJA_BODY_LINE in output_by_path_map["claude/rules/l1.md"].content.decode("utf-8").split("\n")
     assert JINJA_BODY_LINE in output_by_path_map["cursor/rules/l1.mdc"].content.decode("utf-8").split("\n")
@@ -71,7 +71,7 @@ def test_jinja_syntax_in_a_master_body_renders_literally(fixture_repo: Path) -> 
 # --------------------------------------------------------------------------------
 
 def test_every_real_master_round_trips_through_its_claude_output() -> None:
-    output_by_path_map = render_all(REPO_DIR)
+    output_by_path_map = render_repo(REPO_DIR)
 
     for rule in read_masters(REPO_DIR).rule_list:
         text = output_by_path_map[f"claude/rules/{rule.name}.md"].content.decode("utf-8")
@@ -83,7 +83,7 @@ def test_every_real_master_round_trips_through_its_claude_output() -> None:
 
 def test_every_output_ends_with_exactly_one_newline(fixture_repo: Path) -> None:
     for repo_dir in [fixture_repo, REPO_DIR]:
-        for output_path, output_file in render_all(repo_dir).items():
+        for output_path, output_file in render_repo(repo_dir).items():
             text = output_file.content.decode("utf-8")
 
             assert text.endswith("\n") and not text.endswith("\n\n"), output_path
@@ -94,7 +94,7 @@ def test_every_output_ends_with_exactly_one_newline(fixture_repo: Path) -> None:
 # --------------------------------------------------------------------------------
 
 def _output_text(repo_dir: Path, output_path: str) -> str:
-    return render_all(repo_dir)[output_path].content.decode("utf-8")
+    return render_repo(repo_dir)[output_path].content.decode("utf-8")
 
 
 def _write_master(repo_dir: Path, relative_name: str, content: str) -> None:

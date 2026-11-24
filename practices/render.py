@@ -11,9 +11,9 @@ from pathlib import Path
 import jinja2
 
 from practices.errors import PracticesError
-from practices.model import OutputFile, Rule, Skill
+from practices.model import Masters, OutputFile, Rule, Skill
 from practices.profiles import AGENT_PROFILE_LIST, AgentProfile
-from practices.reader import read_masters
+from practices.reader import SKILL_FILE_NAME
 
 
 # --------------------------------------------------------------------------------
@@ -52,15 +52,13 @@ def _yaml_str(text: str) -> str:
 # Rendering every master
 # --------------------------------------------------------------------------------
 
-def render_all(repo_dir: Path) -> dict[str, OutputFile]:
-    masters = read_masters(repo_dir)
+def render_all(masters: Masters, repo_dir: Path) -> dict[str, OutputFile]:
     environment = build_environment(repo_dir / TEMPLATES_FOLDER)
     output_by_path_map = {}
 
     for profile in AGENT_PROFILE_LIST:
         for rule in masters.rule_list:
-            output_path = f"{profile.name}/{profile.rule_folder}/{rule.name}{profile.rule_extension}"
-            output_by_path_map[output_path] = OutputFile(_render_rule(environment, profile, rule), False)
+            output_by_path_map.update(_render_rule(environment, profile, rule))
 
         for skill in masters.skill_list:
             output_by_path_map.update(_render_skill(environment, profile, skill))
@@ -68,17 +66,19 @@ def render_all(repo_dir: Path) -> dict[str, OutputFile]:
     return _sorted_by_path(output_by_path_map)
 
 
-def _render_rule(environment: jinja2.Environment, profile: AgentProfile, rule: Rule) -> bytes:
+def _render_rule(environment: jinja2.Environment, profile: AgentProfile, rule: Rule) -> dict[str, OutputFile]:
+    output_path = f"{profile.name}/{profile.rule_folder}/{rule.name}{profile.rule_extension}"
     value_by_name_map = {"rule": rule, "master_path": rule.master_path}
+    rule_content = _render_template(environment, profile.rule_template, value_by_name_map)
 
-    return _render_template(environment, profile.rule_template, value_by_name_map)
+    return {output_path: OutputFile(rule_content, False)}
 
 
 def _render_skill(environment: jinja2.Environment, profile: AgentProfile, skill: Skill) -> dict[str, OutputFile]:
     skill_path = f"{profile.name}/{profile.skill_folder}/{skill.name}"
     value_by_name_map = {"skill": skill, "master_path": skill.master_path}
     skill_content = _render_template(environment, profile.skill_template, value_by_name_map)
-    output_by_path_map = {f"{skill_path}/SKILL.md": OutputFile(skill_content, False)}
+    output_by_path_map = {f"{skill_path}/{SKILL_FILE_NAME}": OutputFile(skill_content, False)}
 
     for extra_file in skill.extra_file_list:
         output_by_path_map[f"{skill_path}/{extra_file.path}"] = OutputFile(

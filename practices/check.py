@@ -13,6 +13,7 @@ from practices.cli import REPO_DIR, run_command
 from practices.errors import PracticesError, UsageError
 from practices.model import OutputFile
 from practices.output import GENERATED_FOLDER, read_output_tree
+from practices.reader import read_masters
 from practices.render import render_all
 
 
@@ -30,7 +31,8 @@ COMMAND_NAME = "practices.check"
 # --------------------------------------------------------------------------------
 
 def find_drift(repo_dir: Path) -> list[str]:
-    expected_by_path_map = render_all(repo_dir)
+    masters = read_masters(repo_dir)
+    expected_by_path_map = render_all(masters, repo_dir)
     actual_by_path_map = read_output_tree(repo_dir)
     drift_list = []
 

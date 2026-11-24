@@ -5,7 +5,7 @@
 from pathlib import Path
 
 from practices import check, generate
-from practices.render import render_all
+from tests.helpers import render_repo
 
 
 # --------------------------------------------------------------------------------
@@ -31,7 +31,7 @@ def test_output_keys_are_sorted_whatever_the_creation_order(fixture_repo: Path) 
     _write_rule(fixture_repo, "z1.md")
     _write_rule(fixture_repo, "c1.md")
 
-    output_path_list = list(render_all(fixture_repo))
+    output_path_list = list(render_repo(fixture_repo))
 
     assert output_path_list == sorted(output_path_list)
     assert "claude/rules/c1.md" in output_path_list
