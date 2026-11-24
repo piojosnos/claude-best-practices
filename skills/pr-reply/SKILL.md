@@ -65,9 +65,11 @@ says they have responded on the PR, re-fetch and reconcile before doing anything
      proposal. Reply again with a refined answer or option; keep looping until the
      thread is settled.
    - **Approved**: the user said go/do-it. Add the concrete fix to the apply-list.
+     Approval is explicit: advocacy, a "why not X?" or a proposed approach from the
+     user is still open, not approved. When unsure, ask for the go.
    - **No-op / resolved**: the user said "just understanding" / "no change" /
-     "resolving". Record as no-op; do not reply again (a needless reply reopens a
-     thread the user just closed).
+     "resolving". Record as no-op and post one terse `[Assistant] Ack, no action.` so
+     the thread shows it was seen; nothing more.
    - **Decision captured**: the user chose an option or asked for a planning/backlog
      note. Record it as an action (often a `.planning` edit, not PR code).
 3. Never double-post: skip any thread whose latest comment is already your reply with
