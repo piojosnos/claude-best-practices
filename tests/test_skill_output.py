@@ -54,6 +54,21 @@ def test_a_numeric_skill_name_stays_a_string_in_the_output(fixture_repo: Path, a
 
 
 @pytest.mark.parametrize("agent_name", AGENT_NAME_LIST)
+def test_a_description_with_odd_characters_survives_the_yaml_round_trip(fixture_repo: Path, agent_name: str) -> None:
+    description = "a\x85b\x7fc\u2028d\u00a0e\U0001f600f"
+
+    write_skill(
+        fixture_repo,
+        "x1",
+        '---\nname: x1\ndescription: "a\\x85b\\x7fc\\u2028d\\u00a0e\\U0001f600f"\n---\n\n# X1\n\nText x1.\n',
+    )
+
+    output_text = _output_text(fixture_repo, f"{agent_name}/skills/x1/SKILL.md")
+
+    assert _frontmatter_map(output_text)["description"] == description
+
+
+@pytest.mark.parametrize("agent_name", AGENT_NAME_LIST)
 def test_an_extra_file_is_copied_byte_for_byte_without_a_header(fixture_repo: Path, agent_name: str) -> None:
     output_file = render_repo(fixture_repo)[f"{agent_name}/skills/a/extra1.txt"]
 

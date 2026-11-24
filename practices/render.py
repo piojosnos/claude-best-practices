@@ -45,7 +45,23 @@ def _build_environment(templates_dir: Path) -> jinja2.Environment:
 
 
 def _yaml_str(text: str) -> str:
-    return json.dumps(text, ensure_ascii=False)
+    quoted_text = json.dumps(text, ensure_ascii=False)
+    escaped_char_list = []
+
+    for char in quoted_text:
+        if not char.isprintable():
+            escaped_char_list.append(_escape_code_point(ord(char)))
+        else:
+            escaped_char_list.append(char)
+
+    return "".join(escaped_char_list)
+
+
+def _escape_code_point(code_point: int) -> str:
+    if code_point <= 0xFFFF:
+        return f"\\u{code_point:04x}"
+
+    return f"\\U{code_point:08x}"
 
 
 # --------------------------------------------------------------------------------
