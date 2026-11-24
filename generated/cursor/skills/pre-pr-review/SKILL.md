@@ -1,5 +1,5 @@
 ---
-name: pre-pr-review
+name: "pre-pr-review"
 description: "Self-review the current branch's diff against the loaded rules before opening a PR or pushing a review-round fix. Reports every finding with file and line, then fixes them on the user's go. Run manually with /pre-pr-review."
 disable-model-invocation: true
 ---

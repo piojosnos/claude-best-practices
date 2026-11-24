@@ -1,5 +1,5 @@
 ---
-name: update-practice
+name: "update-practice"
 description: "Change, add or remove a rule or a skill of the best-practices repo. Edits the master, regenerates the agent copies, runs the checks, commits on a new branch and opens the PR after the user's push go. Use when the user says \"change the rule\", \"add a practice\", \"remove the skill\", \"update the practices\", or asks to record a new standing practice."
 ---
 <!-- GENERATED from skills/update-practice/SKILL.md; edit that file and regenerate -->

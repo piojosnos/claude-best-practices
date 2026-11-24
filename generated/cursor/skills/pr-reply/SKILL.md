@@ -1,5 +1,5 @@
 ---
-name: pr-reply
+name: "pr-reply"
 description: "Read the current pull request's inline review comments, investigate the code behind each, and post a proposed-approach reply threaded under each comment. Propose only; do NOT change code until the user approves. On approval, apply approved fixes as atomic commits. Use when the user says something like \"read/answer the PR comments\", \"reply to each review comment\", \"triage the PR feedback\", or points at a PR's review comments."
 ---
 <!-- GENERATED from skills/pr-reply/SKILL.md; edit that file and regenerate -->

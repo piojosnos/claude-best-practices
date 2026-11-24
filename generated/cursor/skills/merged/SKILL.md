@@ -1,5 +1,5 @@
 ---
-name: merged
+name: "merged"
 description: "Sync local git state after a PR was merged on GitHub. Switches to the branch the PR merged INTO (the base), pulls it fast-forward, deletes the now-stale feature branch (direct command, no extra prompt), then shows the roadmap position and tells the user what phase is next. Use when the user says \"/merged\", \"I merged the PR\", \"the PR landed\", \"sync after merge\", or otherwise signals a merge just happened on the remote."
 ---
 <!-- GENERATED from skills/merged/SKILL.md; edit that file and regenerate -->

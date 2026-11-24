@@ -11,13 +11,13 @@ import yaml
 
 from practices import generate
 from practices.cli import REPO_DIR
-from tests.helpers import render_repo
+from tests.helpers import render_repo, write_skill
 
 
 AGENT_NAME_LIST = ["claude", "cursor"]
 EXPECTED_SKILL_A = (
     "---\n"
-    "name: a\n"
+    'name: "a"\n'
     'description: "Skill a1 does \\"a1\\" work. Use when a1."\n'
     "---\n"
     "<!-- GENERATED from skills/a/SKILL.md; edit that file and regenerate -->\n"
@@ -42,6 +42,15 @@ def test_the_skill_frontmatter_round_trips_through_yaml(fixture_repo: Path, agen
     frontmatter_map = _frontmatter_map(_output_text(fixture_repo, f"{agent_name}/skills/a/SKILL.md"))
 
     assert frontmatter_map == {"name": "a", "description": 'Skill a1 does "a1" work. Use when a1.'}
+
+
+@pytest.mark.parametrize("agent_name", AGENT_NAME_LIST)
+def test_a_numeric_skill_name_stays_a_string_in_the_output(fixture_repo: Path, agent_name: str) -> None:
+    write_skill(fixture_repo, "123", '---\nname: "123"\ndescription: d1\n---\n\n# N1\n\nText n1.\n')
+
+    output_text = _output_text(fixture_repo, f"{agent_name}/skills/123/SKILL.md")
+
+    assert _frontmatter_map(output_text)["name"] == "123"
 
 
 @pytest.mark.parametrize("agent_name", AGENT_NAME_LIST)

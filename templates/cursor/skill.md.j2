@@ -1,5 +1,5 @@
 ---
-name: {{ skill.name }}
+name: {{ skill.name | yaml_str }}
 description: {{ skill.description | yaml_str }}
 {% if skill.disable_model_invocation is not none %}
 disable-model-invocation: {{ "true" if skill.disable_model_invocation else "false" }}
