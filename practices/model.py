@@ -1,0 +1,32 @@
+# --------------------------------------------------------------------------------
+# The typed model: what the reader returns and what the renderer produces
+# --------------------------------------------------------------------------------
+
+from dataclasses import dataclass
+
+
+# --------------------------------------------------------------------------------
+# Masters
+# --------------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class Rule:
+    name: str
+    master_path: str
+    path_list: list[str]
+    body: str
+
+
+@dataclass(frozen=True)
+class Masters:
+    rule_list: list[Rule]
+
+
+# --------------------------------------------------------------------------------
+# Output
+# --------------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class OutputFile:
+    content: bytes
+    executable: bool

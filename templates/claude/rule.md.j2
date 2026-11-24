@@ -1,0 +1,11 @@
+{% if rule.path_list %}
+---
+paths:
+{% for glob in rule.path_list %}
+  - {{ glob | yaml_str }}
+{% endfor %}
+---
+{% endif %}
+{% include "_generated_header.j2" %}
+
+{{ rule.body }}
