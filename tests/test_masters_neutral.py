@@ -7,6 +7,7 @@
 from pathlib import Path
 
 from practices.cli import REPO_DIR
+from practices.reader import read_masters
 
 
 FORBIDDEN_TEXT_LIST = [
@@ -27,20 +28,30 @@ BEST_PRACTICES_RULE = "rules/best-practices.md"
 # --------------------------------------------------------------------------------
 
 def test_no_master_names_an_agent_path_or_tool() -> None:
-    master_file_list = _master_file_list()
+    text_by_path_map = _master_text_by_path_map(REPO_DIR)
     problem_list = []
 
-    assert master_file_list
+    assert text_by_path_map
 
-    for master_file in master_file_list:
-        master_path = master_file.relative_to(REPO_DIR).as_posix()
-        text = master_file.read_text(encoding="utf-8")
-
+    for master_path, text in text_by_path_map.items():
         for forbidden_text in FORBIDDEN_TEXT_LIST:
             if forbidden_text in text:
                 problem_list.append(f"{master_path}: {forbidden_text}")
 
     assert problem_list == []
+
+
+def test_the_master_walk_skips_hidden_and_binary_files(fixture_repo: Path) -> None:
+    (fixture_repo / "rules" / ".DS_Store").write_bytes(b"\xff\xfe")
+    (fixture_repo / "skills" / "a" / ".DS_Store").write_bytes(b"\xff\xfe")
+    (fixture_repo / "skills" / "a" / "blob1.bin").write_bytes(b"\xff\xfe")
+
+    assert list(_master_text_by_path_map(fixture_repo)) == [
+        "rules/a.md",
+        "rules/b.md",
+        "skills/a/SKILL.md",
+        "skills/a/extra1.txt",
+    ]
 
 
 # --------------------------------------------------------------------------------
@@ -64,12 +75,10 @@ def test_the_best_practices_rule_names_no_absolute_path() -> None:
 def test_finding_the_clone_names_the_folder_git_must_run_in() -> None:
     problem_list = []
 
-    for master_file in _master_file_list():
-        text = master_file.read_text(encoding="utf-8")
-
+    for master_path, text in _master_text_by_path_map(REPO_DIR).items():
         for line in text.split("\n"):
             if "rev-parse --show-toplevel" in line and "git -C" not in line:
-                problem_list.append(f"{master_file.relative_to(REPO_DIR).as_posix()}: {line.strip()}")
+                problem_list.append(f"{master_path}: {line.strip()}")
 
     assert problem_list == []
 
@@ -78,12 +87,22 @@ def test_finding_the_clone_names_the_folder_git_must_run_in() -> None:
 # TDL
 # --------------------------------------------------------------------------------
 
-def _master_file_list() -> list[Path]:
-    master_file_list = []
+def _master_text_by_path_map(repo_dir: Path) -> dict[str, str]:
+    masters = read_masters(repo_dir)
+    text_by_path_map = {}
 
-    for folder in ["rules", "skills"]:
-        for entry in (REPO_DIR / folder).rglob("*"):
-            if entry.is_file():
-                master_file_list.append(entry)
+    for rule in masters.rule_list:
+        text_by_path_map[rule.master_path] = (repo_dir / rule.master_path).read_text(encoding="utf-8")
 
-    return sorted(master_file_list, key=Path.as_posix)
+    for skill in masters.skill_list:
+        text_by_path_map[skill.master_path] = (repo_dir / skill.master_path).read_text(encoding="utf-8")
+
+        for extra_file in skill.extra_file_list:
+            extra_path = f"skills/{skill.name}/{extra_file.path}"
+
+            try:
+                text_by_path_map[extra_path] = extra_file.content.decode("utf-8")
+            except UnicodeDecodeError:
+                continue
+
+    return text_by_path_map
