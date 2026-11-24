@@ -139,7 +139,7 @@ def _output_text(repo_dir: Path, output_path: str) -> str:
 
 
 def _frontmatter_map(text: str) -> dict:
-    block = text.split("\n---\n")[0].removeprefix("---\n")
+    block = text.split("\n---\n", 1)[0].removeprefix("---\n")
 
     return yaml.safe_load(block)
 

@@ -21,7 +21,11 @@ line-length = 120
 extend-exclude = ["generated"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I"]
+# E, F and I catch errors and keep imports tidy; B, UP, PTH, ARG and RUF add likely
+# bugs, outdated syntax, pathlib over os.path, unused arguments and ruff's own checks.
+# SIM and PL are left out: SIM pushes comprehensions and any() over plain loops,
+# and PL flags literal numbers in test asserts.
+select = ["E", "F", "I", "B", "UP", "PTH", "ARG", "RUF"]
 
 [tool.ruff.lint.isort]
 lines-after-imports = 2

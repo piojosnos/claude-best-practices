@@ -21,6 +21,7 @@ from practices.reader import SKILL_FILE_NAME
 # --------------------------------------------------------------------------------
 
 _TEMPLATES_FOLDER = "templates"
+_MAX_SHORT_ESCAPE_CODE_POINT = 0xFFFF
 
 
 # --------------------------------------------------------------------------------
@@ -58,7 +59,7 @@ def _yaml_str(text: str) -> str:
 
 
 def _escape_code_point(code_point: int) -> str:
-    if code_point <= 0xFFFF:
+    if code_point <= _MAX_SHORT_ESCAPE_CODE_POINT:
         return f"\\u{code_point:04x}"
 
     return f"\\U{code_point:08x}"

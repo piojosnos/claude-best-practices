@@ -5,7 +5,6 @@
 # is built beside it and swapped in, so a failed write keeps the old one.
 # --------------------------------------------------------------------------------
 
-import os
 import shutil
 import tempfile
 from pathlib import Path
@@ -63,13 +62,13 @@ def _refuse_generated_link(generated_dir: Path) -> None:
 
 def _swap_in(generated_dir: Path, new_dir: Path, old_dir: Path) -> None:
     if generated_dir.exists():
-        os.replace(generated_dir, old_dir)
+        generated_dir.replace(old_dir)
 
     try:
-        os.replace(new_dir, generated_dir)
+        new_dir.replace(generated_dir)
     except OSError:
         if old_dir.exists():
-            os.replace(old_dir, generated_dir)
+            old_dir.replace(generated_dir)
 
         raise
 

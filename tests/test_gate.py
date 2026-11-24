@@ -13,7 +13,7 @@ from practices import gate
 # --------------------------------------------------------------------------------
 
 def test_the_gate_runs_every_step_in_order_and_passes(tmp_path: Path, capsys) -> None:
-    step_list = [_step("s1", tmp_path, 0), _step("s2", tmp_path, 0)]
+    step_list = [_step("s1", 0), _step("s2", 0)]
 
     assert gate.main([], tmp_path, step_list) == 0
     assert (tmp_path / "ran.txt").read_text() == "s1\ns2\n"
@@ -21,7 +21,7 @@ def test_the_gate_runs_every_step_in_order_and_passes(tmp_path: Path, capsys) ->
 
 
 def test_the_gate_stops_at_the_first_failing_step(tmp_path: Path, capsys) -> None:
-    step_list = [_step("s1", tmp_path, 0), _step("s2", tmp_path, 3), _step("s3", tmp_path, 0)]
+    step_list = [_step("s1", 0), _step("s2", 3), _step("s3", 0)]
 
     assert gate.main([], tmp_path, step_list) == 1
     assert (tmp_path / "ran.txt").read_text() == "s1\ns2\n"
@@ -37,7 +37,7 @@ def test_the_gate_refuses_an_argument(capsys) -> None:
 # TDL
 # --------------------------------------------------------------------------------
 
-def _step(name: str, work_dir: Path, exit_code: int) -> tuple[str, list[str]]:
+def _step(name: str, exit_code: int) -> tuple[str, list[str]]:
     script = (
         f"import pathlib, sys; "
         f"pathlib.Path('ran.txt').open('a').write('{name}\\n'); "
