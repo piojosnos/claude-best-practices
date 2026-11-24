@@ -12,6 +12,7 @@ import pytest
 from practices.errors import PracticesError
 from practices.model import ExtraFile, Rule, Skill
 from practices.reader import read_masters
+from tests.helpers import write_master, write_skill
 
 
 GLOB_SHAPE_TEXT = "has a control character or a space at an end; write a plain glob"
@@ -181,14 +182,14 @@ def test_reader_returns_typed_rules_of_the_fixture_masters(fixture_repo: Path) -
 
 
 def test_masters_come_back_sorted_by_name(fixture_repo: Path) -> None:
-    _write_master(fixture_repo, "z1.md", "# Z1\n\nText z1.\n")
-    _write_master(fixture_repo, "c1.md", "# C1\n\nText c1.\n")
+    write_master(fixture_repo, "z1.md", "# Z1\n\nText z1.\n")
+    write_master(fixture_repo, "c1.md", "# C1\n\nText c1.\n")
 
     assert _name_list(fixture_repo) == ["a", "b", "c1", "z1"]
 
 
 def test_a_master_in_a_subfolder_is_named_with_its_folder(fixture_repo: Path) -> None:
-    _write_master(fixture_repo, "sub1/d1.md", "# D1\n\nText d1.\n")
+    write_master(fixture_repo, "sub1/d1.md", "# D1\n\nText d1.\n")
 
     assert _name_list(fixture_repo) == ["a", "b", "sub1/d1"]
 
@@ -196,7 +197,7 @@ def test_a_master_in_a_subfolder_is_named_with_its_folder(fixture_repo: Path) ->
 def test_a_master_with_crlf_line_ends_reads_like_its_lf_twin(fixture_repo: Path) -> None:
     lf_text = '---\npaths:\n  - "**/*.x1"\n---\n\n# X1\n\nText x1.\n'
 
-    _write_master(fixture_repo, "x1.md", lf_text)
+    write_master(fixture_repo, "x1.md", lf_text)
     lf_rule = _rule_named(fixture_repo, "x1")
 
     (fixture_repo / "rules" / "x1.md").write_bytes(lf_text.replace("\n", "\r\n").encode("utf-8"))
@@ -207,7 +208,7 @@ def test_a_master_with_crlf_line_ends_reads_like_its_lf_twin(fixture_repo: Path)
 def test_a_master_with_a_bom_and_spaced_fences_reads_like_its_plain_twin(fixture_repo: Path) -> None:
     plain_text = '---\npaths:\n  - "**/*.x1"\n---\n\n# X1\n\nText x1.\n'
 
-    _write_master(fixture_repo, "x1.md", plain_text)
+    write_master(fixture_repo, "x1.md", plain_text)
     plain_rule = _rule_named(fixture_repo, "x1")
 
     spaced_text = plain_text.replace("---\n", "--- \n")
@@ -218,14 +219,14 @@ def test_a_master_with_a_bom_and_spaced_fences_reads_like_its_plain_twin(fixture
 
 
 def test_hidden_entries_in_rules_are_skipped(fixture_repo: Path) -> None:
-    _write_master(fixture_repo, ".DS_Store", "not a master")
-    _write_master(fixture_repo, ".hidden1/e1.md", "# E1\n\nText e1.\n")
+    write_master(fixture_repo, ".DS_Store", "not a master")
+    write_master(fixture_repo, ".hidden1/e1.md", "# E1\n\nText e1.\n")
 
     assert _name_list(fixture_repo) == ["a", "b"]
 
 
 def test_a_body_keeps_trailing_spaces_and_loses_only_newlines(fixture_repo: Path) -> None:
-    _write_master(fixture_repo, "x1.md", "\n\n# X1\n\nText x1.  \n\n\n")
+    write_master(fixture_repo, "x1.md", "\n\n# X1\n\nText x1.  \n\n\n")
 
     assert _rule_named(fixture_repo, "x1").body == "# X1\n\nText x1.  "
 
@@ -246,7 +247,7 @@ def test_reader_returns_a_typed_skill_of_the_fixture_master(fixture_repo: Path) 
 def test_reader_reads_the_disable_model_invocation_flag_of_a_skill(
     fixture_repo: Path, text: str, expected: bool
 ) -> None:
-    _write_skill(
+    write_skill(
         fixture_repo,
         "x1",
         f"---\nname: x1\ndescription: d1\ndisable-model-invocation: {text}\n---\n\n# X1\n\nText x1.\n",
@@ -272,8 +273,8 @@ def test_a_skill_extra_file_in_a_subfolder_keeps_its_relative_path_and_exec_bit(
 
 
 def test_skills_come_back_sorted_by_name(fixture_repo: Path) -> None:
-    _write_skill(fixture_repo, "z1", "---\nname: z1\ndescription: d1\n---\n\n# Z1\n\nText z1.\n")
-    _write_skill(fixture_repo, "c1", "---\nname: c1\ndescription: d1\n---\n\n# C1\n\nText c1.\n")
+    write_skill(fixture_repo, "z1", "---\nname: z1\ndescription: d1\n---\n\n# Z1\n\nText z1.\n")
+    write_skill(fixture_repo, "c1", "---\nname: c1\ndescription: d1\n---\n\n# C1\n\nText c1.\n")
 
     skill_name_list = []
 
@@ -300,7 +301,7 @@ def test_hidden_entries_in_skills_are_skipped(fixture_repo: Path) -> None:
 
 @pytest.mark.parametrize("content, message", BROKEN_RULE_MASTER_LIST)
 def test_reader_rejects_a_broken_rule_master(fixture_repo: Path, content: str, message: str) -> None:
-    _write_master(fixture_repo, "x1.md", content)
+    write_master(fixture_repo, "x1.md", content)
 
     with pytest.raises(PracticesError) as raised:
         read_masters(fixture_repo)
@@ -309,7 +310,7 @@ def test_reader_rejects_a_broken_rule_master(fixture_repo: Path, content: str, m
 
 
 def test_reader_rejects_a_file_in_rules_that_is_not_md(fixture_repo: Path) -> None:
-    _write_master(fixture_repo, "notes1.txt", "Text n1.\n")
+    write_master(fixture_repo, "notes1.txt", "Text n1.\n")
 
     with pytest.raises(PracticesError) as raised:
         read_masters(fixture_repo)
@@ -344,7 +345,7 @@ def test_reader_rejects_a_broken_skill_master(
     if content is None:
         (fixture_repo / "skills" / folder).mkdir()
     else:
-        _write_skill(fixture_repo, folder, content)
+        write_skill(fixture_repo, folder, content)
 
     with pytest.raises(PracticesError) as raised:
         read_masters(fixture_repo)
@@ -375,19 +376,6 @@ def test_reader_rejects_a_link_in_a_skill(fixture_repo: Path, tmp_path: Path) ->
 # --------------------------------------------------------------------------------
 # TDL
 # --------------------------------------------------------------------------------
-
-def _write_master(repo_dir: Path, relative_name: str, content: str) -> None:
-    master_file = repo_dir / "rules" / relative_name
-
-    master_file.parent.mkdir(parents=True, exist_ok=True)
-    master_file.write_text(content, encoding="utf-8")
-
-
-def _write_skill(repo_dir: Path, folder: str, content: str) -> None:
-    skill_file = repo_dir / "skills" / folder / "SKILL.md"
-
-    skill_file.parent.mkdir(parents=True, exist_ok=True)
-    skill_file.write_text(content, encoding="utf-8")
 
 
 def _name_list(repo_dir: Path) -> list[str]:

@@ -9,7 +9,7 @@ import pytest
 from practices import check, generate
 from practices.model import OutputFile
 from practices.output import write_output
-from tests.helpers import render_repo
+from tests.helpers import render_repo, write_master
 
 
 # --------------------------------------------------------------------------------
@@ -32,8 +32,8 @@ def test_layout_mirrors_each_agent_config_folder(fixture_repo: Path) -> None:
 
 
 def test_output_keys_are_sorted_whatever_the_creation_order(fixture_repo: Path) -> None:
-    _write_rule(fixture_repo, "z1.md")
-    _write_rule(fixture_repo, "c1.md")
+    write_master(fixture_repo, "z1.md", "# R1\n\nText r1.\n")
+    write_master(fixture_repo, "c1.md", "# R1\n\nText r1.\n")
 
     output_path_list = list(render_repo(fixture_repo))
 
@@ -123,10 +123,6 @@ def _snapshot(repo_dir: Path) -> dict[str, tuple[bytes, int]]:
             )
 
     return snapshot_by_path_map
-
-
-def _write_rule(repo_dir: Path, file_name: str) -> None:
-    (repo_dir / "rules" / file_name).write_text("# R1\n\nText r1.\n")
 
 
 def _name_list(folder: Path) -> list[str]:

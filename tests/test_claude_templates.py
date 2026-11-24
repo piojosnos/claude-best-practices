@@ -11,7 +11,7 @@ import yaml
 from practices.cli import REPO_DIR
 from practices.model import Rule
 from practices.reader import read_masters
-from tests.helpers import render_repo
+from tests.helpers import render_repo, write_master
 
 
 EXPECTED_CLAUDE_RULE_A = (
@@ -51,7 +51,7 @@ def test_claude_rule_with_paths_keeps_a_quoted_paths_list_before_the_header(fixt
 def test_a_glob_with_a_hash_and_a_quote_survives_the_yaml_round_trip(fixture_repo: Path) -> None:
     glob = "**/#1'x.txt"
 
-    _write_master(fixture_repo, "h1.md", f'---\npaths:\n  - "{glob}"\n---\n\n# H1\n\nText h1.\n')
+    write_master(fixture_repo, "h1.md", f'---\npaths:\n  - "{glob}"\n---\n\n# H1\n\nText h1.\n')
 
     frontmatter_map, _ = _split_output(_output_text(fixture_repo, "claude/rules/h1.md"))
 
@@ -59,7 +59,7 @@ def test_a_glob_with_a_hash_and_a_quote_survives_the_yaml_round_trip(fixture_rep
 
 
 def test_jinja_syntax_in_a_master_body_renders_literally(fixture_repo: Path) -> None:
-    _write_master(fixture_repo, "l1.md", f"# L1\n\n{JINJA_BODY_LINE}\n")
+    write_master(fixture_repo, "l1.md", f"# L1\n\n{JINJA_BODY_LINE}\n")
     output_by_path_map = render_repo(fixture_repo)
 
     assert JINJA_BODY_LINE in output_by_path_map["claude/rules/l1.md"].content.decode("utf-8").split("\n")
@@ -95,10 +95,6 @@ def test_every_output_ends_with_exactly_one_newline(fixture_repo: Path) -> None:
 
 def _output_text(repo_dir: Path, output_path: str) -> str:
     return render_repo(repo_dir)[output_path].content.decode("utf-8")
-
-
-def _write_master(repo_dir: Path, relative_name: str, content: str) -> None:
-    (repo_dir / "rules" / relative_name).write_text(content, encoding="utf-8")
 
 
 def _split_output(text: str) -> tuple[dict | None, str]:
