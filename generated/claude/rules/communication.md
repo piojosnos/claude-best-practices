@@ -13,7 +13,7 @@
   Why: churn is cheap for an agent and paid once; a weaker design is paid every day after.
 - When the user answers a picker with "let me clarify", ask what is unclear, expand with grounded context and a recommendation, then re-pose the question (reframed if needed). Do not retry the same options cold.
 - Surface deferred work explicitly and offer to add it to the roadmap.
-- In discussion phases, present each option in prose with a recommendation and let the user reply in text. Use the AskUserQuestion picker only when the choices are settled and simple.
+- In discussion phases, present each option in prose with a recommendation and let the user reply in text. Use a multiple-choice picker, if the agent has one, only when the choices are settled and simple.
 - Keep explanations jargon-light; when a term is dense, define it plainly.
 
 ## Constraints and destructive actions

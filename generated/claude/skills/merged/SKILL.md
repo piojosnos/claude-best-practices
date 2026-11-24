@@ -81,7 +81,7 @@ git branch --merged "$TARGET" | grep -F "$FEATURE_BRANCH"
 Load the current roadmap position:
 
 ```bash
-node "$HOME/.claude/gsd-core/bin/gsd-tools.cjs" query progress 2>/dev/null
+gsd-tools query progress 2>/dev/null
 ```
 
 If that query is unavailable, fall back to the roadmap file directly.
@@ -119,10 +119,10 @@ Local <target-branch> synced to <short-sha> <subject>.
 Phase <X>: <name>
 
 ### What's next
-<one recommended command, matched to the NEXT phase's state:>
-- not planned yet -> /gsd-discuss-phase <Y>   (or /gsd-plan-phase <Y>)
-- planned         -> /gsd-execute-phase <Y>
-- mid-phase       -> /gsd-resume-work
+<one recommended skill, matched to the NEXT phase's state:>
+- not planned yet -> the gsd-discuss-phase skill for <Y>   (or gsd-plan-phase)
+- planned         -> the gsd-execute-phase skill for <Y>
+- mid-phase       -> the gsd-resume-work skill
 
 ### Remaining phases
 | Phase | Name | What it does | State |
@@ -136,5 +136,5 @@ Rules:
   a real one-to-two-line description drawn from ROADMAP (not just the title).
 - If the arc is large, group the table by sub-arc (e.g. an `N.1.x` cleanup block and an
   `N.2+` feature block) with a subheading per group; keep descriptions concise.
-- Recommend exactly ONE command (for the next phase); do not list every GSD command.
+- Recommend exactly ONE skill (for the next phase); do not list every GSD skill.
 - Do not start the next phase automatically; the user decides.
