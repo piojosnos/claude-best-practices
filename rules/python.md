@@ -27,7 +27,17 @@ paths:
   # --------------------------------------------------------------------------------
   ```
 
-- A section groups related functions (one topic, one public function and its private helpers). A function does not get its own banner; its name already says what it does.
+- A section groups related functions (one topic, one public function and its private helpers). A function does not get a titled banner; its name already says what it does.
+- Separate every two functions and classes with the member rule of the general coding rule: `#`, a space and 80 hyphens on its own line, with no title. Keep the two blank lines PEP 8 wants before it and one blank line after it, before the `def`. This holds in tests and helpers too.
+
+  ```python
+      return run_command(command_name, action)
+
+
+  # --------------------------------------------------------------------------------
+
+  def main(argument_list: list[str]) -> int:
+  ```
 - The module header uses the same shape: the purpose is the title.
 - A module with an entry point ends with a `Main / Entry Point` banner over the `if __name__ == "__main__":` block.
 
