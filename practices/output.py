@@ -1,11 +1,13 @@
 # --------------------------------------------------------------------------------
 # The output tree: write generated/ from the rendered map and read it back
 # --------------------------------------------------------------------------------
-# generated/ is owned by the generator: a write removes it whole, so a removed
-# master loses its output. Nothing outside it is ever touched.
+# generated/ is replaced whole, so a removed master loses its output; the new tree
+# is built beside it and swapped in, so a failed write keeps the old one.
 # --------------------------------------------------------------------------------
 
+import os
 import shutil
+import tempfile
 from pathlib import Path
 
 from practices.errors import PracticesError
@@ -30,11 +32,19 @@ def write_output(repo_dir: Path, output_by_path_map: dict[str, OutputFile]) -> N
 
     _check_generated_dir(repo_dir, generated_dir)
 
-    if generated_dir.exists():
-        shutil.rmtree(generated_dir)
+    work_dir = Path(tempfile.mkdtemp(prefix=f".{GENERATED_FOLDER}-", dir=repo_dir))
 
-    for output_path in sorted(output_by_path_map):
-        _write_file(generated_dir / output_path, output_by_path_map[output_path])
+    try:
+        new_dir = work_dir / "new"
+
+        new_dir.mkdir()
+
+        for output_path in sorted(output_by_path_map):
+            _write_file(new_dir / output_path, output_by_path_map[output_path])
+
+        _swap_in(generated_dir, new_dir, work_dir / "old")
+    finally:
+        shutil.rmtree(work_dir)
 
 
 def _check_generated_dir(repo_dir: Path, generated_dir: Path) -> None:
@@ -49,6 +59,19 @@ def _check_generated_dir(repo_dir: Path, generated_dir: Path) -> None:
 def _refuse_generated_link(generated_dir: Path) -> None:
     if generated_dir.is_symlink():
         raise PracticesError(f"{GENERATED_FOLDER} is a link; {GENERATED_FOLDER}/ must be a plain folder")
+
+
+def _swap_in(generated_dir: Path, new_dir: Path, old_dir: Path) -> None:
+    if generated_dir.exists():
+        os.replace(generated_dir, old_dir)
+
+    try:
+        os.replace(new_dir, generated_dir)
+    except OSError:
+        if old_dir.exists():
+            os.replace(old_dir, generated_dir)
+
+        raise
 
 
 def _write_file(target: Path, output_file: OutputFile) -> None:

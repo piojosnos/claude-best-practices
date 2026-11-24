@@ -4,7 +4,11 @@
 
 from pathlib import Path
 
+import pytest
+
 from practices import check, generate
+from practices.model import OutputFile
+from practices.output import write_output
 from tests.helpers import render_repo
 
 
@@ -75,6 +79,23 @@ def test_a_broken_master_leaves_generated_untouched(fixture_repo: Path, capsys) 
     assert _snapshot(fixture_repo) == before_snapshot
 
 
+def test_a_write_that_fails_midway_leaves_generated_and_the_repo_as_they_were(fixture_repo: Path) -> None:
+    generate.main([], fixture_repo)
+    before_snapshot = _snapshot(fixture_repo)
+    before_name_list = _name_list(fixture_repo)
+    clashing_output_map = {
+        "a1.txt": OutputFile(b"a1\n", False),
+        "b1": OutputFile(b"b1\n", False),
+        "b1/c1.txt": OutputFile(b"c1\n", False),
+    }
+
+    with pytest.raises(OSError):
+        write_output(fixture_repo, clashing_output_map)
+
+    assert _snapshot(fixture_repo) == before_snapshot
+    assert _name_list(fixture_repo) == before_name_list
+
+
 def test_generate_refuses_a_generated_link(fixture_repo: Path, tmp_path: Path, capsys) -> None:
     elsewhere_dir = tmp_path / "elsewhere1"
     elsewhere_dir.mkdir()
@@ -106,3 +127,12 @@ def _snapshot(repo_dir: Path) -> dict[str, tuple[bytes, int]]:
 
 def _write_rule(repo_dir: Path, file_name: str) -> None:
     (repo_dir / "rules" / file_name).write_text("# R1\n\nText r1.\n")
+
+
+def _name_list(folder: Path) -> list[str]:
+    name_list = []
+
+    for entry in folder.iterdir():
+        name_list.append(entry.name)
+
+    return sorted(name_list)
