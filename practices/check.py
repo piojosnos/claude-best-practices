@@ -4,12 +4,14 @@
 # Run it from the clone root: uv run --locked python -m practices.check
 # --------------------------------------------------------------------------------
 
+import difflib
 import sys
 from functools import partial
 from pathlib import Path
 
 from practices.cli import REPO_DIR, PracticesError, UsageError, run_command
 from practices.output import GENERATED_FOLDER, read_output_tree
+from practices.model import OutputFile
 from practices.render import render_all
 
 
@@ -23,6 +25,8 @@ COMMAND_NAME = "practices.check"
 # --------------------------------------------------------------------------------
 # Finding drift
 # --------------------------------------------------------------------------------
+# One list entry per file: its drift line, then for a changed text file the diff.
+# --------------------------------------------------------------------------------
 
 def find_drift(repo_dir: Path) -> list[str]:
     expected_by_path_map = render_all(repo_dir)
@@ -34,10 +38,37 @@ def find_drift(repo_dir: Path) -> list[str]:
             drift_list.append(f"missing file: {GENERATED_FOLDER}/{output_path}")
         elif output_path not in expected_by_path_map:
             drift_list.append(f"extra file: {GENERATED_FOLDER}/{output_path}")
-        elif expected_by_path_map[output_path] != actual_by_path_map[output_path]:
-            drift_list.append(f"changed file: {GENERATED_FOLDER}/{output_path}")
+        else:
+            expected = expected_by_path_map[output_path]
+            actual = actual_by_path_map[output_path]
+
+            if expected.content != actual.content:
+                drift_list.append(_describe_changed_file(output_path, expected, actual))
+            elif expected.executable != actual.executable:
+                drift_list.append(f"changed mode: {GENERATED_FOLDER}/{output_path}")
 
     return drift_list
+
+
+def _describe_changed_file(output_path: str, expected: OutputFile, actual: OutputFile) -> str:
+    drift_line = f"changed file: {GENERATED_FOLDER}/{output_path}"
+
+    try:
+        expected_line_list = expected.content.decode("utf-8").splitlines()
+        actual_line_list = actual.content.decode("utf-8").splitlines()
+    except UnicodeDecodeError:
+        return drift_line
+
+    diff_line_list = difflib.unified_diff(
+        expected_line_list,
+        actual_line_list,
+        fromfile=f"expected {output_path}",
+        tofile=f"{GENERATED_FOLDER}/{output_path}",
+        n=3,
+        lineterm="",
+    )
+
+    return "\n".join([drift_line, *diff_line_list])
 
 
 # --------------------------------------------------------------------------------

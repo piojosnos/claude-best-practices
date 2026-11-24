@@ -39,8 +39,13 @@ def write_output(repo_dir: Path, output_by_path_map: dict[str, OutputFile]) -> N
 
 
 def _check_generated_dir(repo_dir: Path, generated_dir: Path) -> None:
-    if generated_dir.is_symlink() or generated_dir.resolve() != repo_dir.resolve() / GENERATED_FOLDER:
-        raise PracticesError(f"{GENERATED_FOLDER}: must be a real folder inside {repo_dir}")
+    if generated_dir.is_symlink():
+        raise PracticesError(f"{GENERATED_FOLDER} is a link; refusing to delete it")
+
+    if generated_dir.resolve() != repo_dir.resolve() / GENERATED_FOLDER:
+        raise PracticesError(
+            f"{GENERATED_FOLDER} does not resolve to {repo_dir / GENERATED_FOLDER}; refusing to delete it"
+        )
 
 
 def _write_file(target: Path, output_file: OutputFile) -> None:
@@ -61,10 +66,16 @@ def read_output_tree(repo_dir: Path) -> dict[str, OutputFile]:
         return output_by_path_map
 
     for entry in sorted(generated_dir.rglob("*"), key=Path.as_posix):
-        if entry.is_file() and not entry.is_symlink():
-            executable = bool(entry.stat().st_mode & _OWNER_EXEC_BIT)
-            output_by_path_map[entry.relative_to(generated_dir).as_posix()] = OutputFile(
-                entry.read_bytes(), executable
+        output_path = entry.relative_to(generated_dir).as_posix()
+
+        if entry.is_symlink():
+            raise PracticesError(
+                f"{GENERATED_FOLDER}/{output_path} is a link; "
+                f"{GENERATED_FOLDER}/ holds only files the generator writes"
             )
+
+        if entry.is_file():
+            executable = bool(entry.stat().st_mode & _OWNER_EXEC_BIT)
+            output_by_path_map[output_path] = OutputFile(entry.read_bytes(), executable)
 
     return output_by_path_map

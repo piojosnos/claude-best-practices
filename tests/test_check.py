@@ -63,7 +63,74 @@ def test_check_names_a_hand_edited_file(fixture_repo: Path, capsys) -> None:
     captured = capsys.readouterr()
 
     assert "changed file: generated/cursor/rules/b.mdc\n" in captured.out
+    assert "+hand edit\n" in captured.out
     assert "1 generated files differ from the masters" in captured.err
+
+
+def test_check_names_a_deleted_output_and_a_stale_extra_file(fixture_repo: Path, capsys) -> None:
+    generate.main([], fixture_repo)
+    capsys.readouterr()
+
+    (fixture_repo / "generated/cursor/skills/a/SKILL.md").unlink()
+    (fixture_repo / "generated/claude/rules/z9.md").write_text("stale z9\n")
+
+    assert check.main([], fixture_repo) == 1
+
+    captured = capsys.readouterr()
+
+    assert "missing file: generated/cursor/skills/a/SKILL.md\n" in captured.out
+    assert "extra file: generated/claude/rules/z9.md\n" in captured.out
+    assert "2 generated files differ from the masters" in captured.err
+
+
+def test_check_names_a_changed_executable_bit(fixture_repo: Path, capsys) -> None:
+    generate.main([], fixture_repo)
+    capsys.readouterr()
+
+    (fixture_repo / "generated/claude/rules/a.md").chmod(0o755)
+
+    assert check.main([], fixture_repo) == 1
+    assert "changed mode: generated/claude/rules/a.md\n" in capsys.readouterr().out
+
+
+def test_check_names_a_changed_binary_file_without_a_diff(fixture_repo: Path, capsys) -> None:
+    generate.main([], fixture_repo)
+    capsys.readouterr()
+
+    (fixture_repo / "generated/claude/skills/a/extra1.txt").write_bytes(b"\xff\xfe")
+
+    assert check.main([], fixture_repo) == 1
+    assert capsys.readouterr().out == "changed file: generated/claude/skills/a/extra1.txt\n"
+
+
+def test_check_refuses_a_link_under_generated(fixture_repo: Path, capsys) -> None:
+    generate.main([], fixture_repo)
+    capsys.readouterr()
+
+    (fixture_repo / "generated/claude/rules/l1.md").symlink_to(fixture_repo / "generated/claude/rules/a.md")
+
+    assert check.main([], fixture_repo) == 1
+    assert "generated/claude/rules/l1.md is a link" in capsys.readouterr().err
+
+
+def test_check_without_generated_names_every_expected_file_as_missing(fixture_repo: Path, capsys) -> None:
+    assert check.main([], fixture_repo) == 1
+
+    captured = capsys.readouterr()
+
+    assert captured.out.count("missing file: generated/") == 8
+    assert "8 generated files differ from the masters" in captured.err
+
+
+def test_check_with_a_broken_master_prints_the_reader_message(fixture_repo: Path, capsys) -> None:
+    (fixture_repo / "rules" / "a.md").write_text("---\npath: x\n---\n\n# A1\n\nText a1.\n")
+
+    assert check.main([], fixture_repo) == 1
+
+    captured = capsys.readouterr()
+
+    assert captured.out == ""
+    assert "rules/a.md: unknown frontmatter key 'path'" in captured.err
 
 
 def test_check_refuses_an_argument(fixture_repo: Path, capsys) -> None:
