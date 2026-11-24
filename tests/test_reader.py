@@ -48,6 +48,10 @@ BROKEN_RULE_MASTER_LIST = [
         "rules/x1.md: the frontmatter is not valid YAML",
     ),
     (
+        "---\nfoo: 2026-13-45\n---\n\n# X1\n\nText x1.\n",
+        "rules/x1.md: the frontmatter is not valid YAML",
+    ),
+    (
         "---\n- a1\n---\n\n# X1\n\nText x1.\n",
         "rules/x1.md: the frontmatter must be a mapping of keys",
     ),

@@ -321,7 +321,7 @@ def _split_frontmatter(text: str, master_path: str) -> tuple[dict, str]:
 def _parse_block(block: str, master_path: str) -> dict:
     try:
         parsed_value = yaml.safe_load(block)
-    except yaml.YAMLError as e:
+    except (yaml.YAMLError, ValueError) as e:
         raise PracticesError(f"{master_path}: the frontmatter is not valid YAML") from e
 
     if parsed_value is None:
