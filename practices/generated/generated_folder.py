@@ -1,7 +1,7 @@
 # --------------------------------------------------------------------------------
-# The output tree: write generated/ from the rendered map and read it back
+# The generated folder: write generated/ from the rendered map and read it back
 # --------------------------------------------------------------------------------
-# generated/ is replaced whole, so a removed master loses its output; the new tree
+# generated/ is replaced whole, so a removed master loses its files; the new tree
 # is built beside it and swapped in, so a failed write keeps the old one.
 # --------------------------------------------------------------------------------
 
@@ -9,8 +9,9 @@ import shutil
 import tempfile
 from pathlib import Path
 
-from practices.errors import PracticesError
-from practices.model import OutputFile, is_executable
+from practices.error.practices_error import PracticesError
+from practices.filesystem.file_mode import is_executable
+from practices.generated.generated_file import GeneratedFile
 
 
 # --------------------------------------------------------------------------------
@@ -26,7 +27,7 @@ _PLAIN_MODE = 0o644
 # Writing
 # --------------------------------------------------------------------------------
 
-def write_output(repo_dir: Path, output_by_path_map: dict[str, OutputFile]) -> None:
+def write_generated_folder(repo_dir: Path, generated_file_by_path_map: dict[str, GeneratedFile]) -> None:
     generated_dir = repo_dir / GENERATED_FOLDER
 
     _check_generated_dir(repo_dir, generated_dir)
@@ -38,8 +39,8 @@ def write_output(repo_dir: Path, output_by_path_map: dict[str, OutputFile]) -> N
 
         new_dir.mkdir()
 
-        for output_path in sorted(output_by_path_map):
-            _write_file(new_dir / output_path, output_by_path_map[output_path])
+        for generated_path in sorted(generated_file_by_path_map):
+            _write_file(new_dir / generated_path, generated_file_by_path_map[generated_path])
 
         _swap_in(generated_dir, new_dir, work_dir / "old")
     finally:
@@ -81,36 +82,36 @@ def _swap_in(generated_dir: Path, new_dir: Path, old_dir: Path) -> None:
 
 # --------------------------------------------------------------------------------
 
-def _write_file(target: Path, output_file: OutputFile) -> None:
+def _write_file(target: Path, generated_file: GeneratedFile) -> None:
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_bytes(output_file.content)
-    target.chmod(_EXECUTABLE_MODE if output_file.executable else _PLAIN_MODE)
+    target.write_bytes(generated_file.content)
+    target.chmod(_EXECUTABLE_MODE if generated_file.executable else _PLAIN_MODE)
 
 
 # --------------------------------------------------------------------------------
 # Reading back
 # --------------------------------------------------------------------------------
 
-def read_output_tree(repo_dir: Path) -> dict[str, OutputFile]:
+def read_generated_folder(repo_dir: Path) -> dict[str, GeneratedFile]:
     generated_dir = repo_dir / GENERATED_FOLDER
-    output_by_path_map = {}
+    generated_file_by_path_map = {}
 
     _refuse_generated_link(generated_dir)
 
     if not generated_dir.is_dir():
-        return output_by_path_map
+        return generated_file_by_path_map
 
     for entry in sorted(generated_dir.rglob("*"), key=Path.as_posix):
-        output_path = entry.relative_to(generated_dir).as_posix()
+        generated_path = entry.relative_to(generated_dir).as_posix()
 
         if entry.is_symlink():
             raise PracticesError(
-                f"{GENERATED_FOLDER}/{output_path} is a link; "
+                f"{GENERATED_FOLDER}/{generated_path} is a link; "
                 f"{GENERATED_FOLDER}/ holds only files the generator writes"
             )
 
         if entry.is_file():
             executable = is_executable(entry)
-            output_by_path_map[output_path] = OutputFile(entry.read_bytes(), executable)
+            generated_file_by_path_map[generated_path] = GeneratedFile(entry.read_bytes(), executable)
 
-    return output_by_path_map
+    return generated_file_by_path_map

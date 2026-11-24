@@ -1,15 +1,9 @@
 # --------------------------------------------------------------------------------
-# The errors every practices module can raise
+# The usage error: a command was called with arguments it does not take
 # --------------------------------------------------------------------------------
-# A command turns them into a message and an exit code (see practices.cli).
+# The command runner prints one "Usage:" line and exits 2.
 # --------------------------------------------------------------------------------
 
-
-class PracticesError(Exception):
-    pass
-
-
-# --------------------------------------------------------------------------------
 
 class UsageError(Exception):
     def __init__(self, args_text: str) -> None:

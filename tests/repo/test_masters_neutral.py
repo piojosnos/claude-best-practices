@@ -6,8 +6,8 @@
 
 from pathlib import Path
 
-from practices.cli import REPO_DIR
-from practices.reader import read_masters
+from practices.command.command_runner import REPO_DIR
+from practices.masters.masters_reader import read_masters
 
 
 FORBIDDEN_TEXT_LIST = [

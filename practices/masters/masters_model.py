@@ -1,14 +1,9 @@
 # --------------------------------------------------------------------------------
-# The typed model: what the reader returns and what the renderer produces
+# The masters model: the typed rules and skills the readers return
 # --------------------------------------------------------------------------------
 
 from dataclasses import dataclass
-from pathlib import Path
 
-
-# --------------------------------------------------------------------------------
-# Masters
-# --------------------------------------------------------------------------------
 
 @dataclass(frozen=True)
 class Rule:
@@ -45,24 +40,3 @@ class Skill:
 class Masters:
     rule_list: list[Rule]
     skill_list: list[Skill]
-
-
-# --------------------------------------------------------------------------------
-# Output
-# --------------------------------------------------------------------------------
-
-@dataclass(frozen=True)
-class OutputFile:
-    content: bytes
-    executable: bool
-
-
-# --------------------------------------------------------------------------------
-# File mode
-# --------------------------------------------------------------------------------
-
-_OWNER_EXEC_BIT = 0o100
-
-
-def is_executable(path: Path) -> bool:
-    return bool(path.stat().st_mode & _OWNER_EXEC_BIT)

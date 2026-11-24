@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from practices.cli import REPO_DIR
+from practices.command.command_runner import REPO_DIR
 
 
 # --------------------------------------------------------------------------------

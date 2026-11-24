@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------------------
-# Frontmatter: the YAML block at the top of a master, read strictly
+# The frontmatter parser: the YAML block at the top of a master, read strictly
 # --------------------------------------------------------------------------------
 # A repeated key or an unknown key stops the run with a message naming the master.
 # --------------------------------------------------------------------------------
@@ -8,7 +8,7 @@ from collections.abc import Hashable
 
 import yaml
 
-from practices.errors import PracticesError
+from practices.error.practices_error import PracticesError
 
 
 # --------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------------------
-# Agent profiles: where and how each agent receives the generated rules
+# The agent profile: where and how each agent receives the generated files
 # --------------------------------------------------------------------------------
 # The rule and skill folders are the folders of the agent's config directory, so
 # generated/<agent>/rules/ and generated/<agent>/skills/ mirror it.

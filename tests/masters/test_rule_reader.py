@@ -9,9 +9,9 @@ from pathlib import Path
 
 import pytest
 
-from practices.errors import PracticesError
-from practices.model import Rule
-from practices.rule_reader import read_rule_list
+from practices.error.practices_error import PracticesError
+from practices.masters.masters_model import Rule
+from practices.masters.rule_reader import read_rule_list
 from tests.helpers import write_master
 
 

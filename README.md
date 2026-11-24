@@ -6,7 +6,8 @@ Standing rules and skills for AI coding agents, shared across projects.
 rules/                 rule masters (conventions: prose style, git workflow, languages)
 skills/                skill masters (reusable agent workflows)
 templates/<agent>/     how each agent's files are laid out
-practices/             the generator (Python)
+practices/             the generator (Python): the commands generate, check and gate
+practices/<package>/   the code the commands use: masters/, rendering/, generated/, command/, error/, filesystem/
 generated/<agent>/     what each agent loads; nobody edits it by hand
 tests/                 pytest checks of the generator and of generated/
 ```

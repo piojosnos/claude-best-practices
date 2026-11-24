@@ -9,9 +9,9 @@ from pathlib import Path
 
 import pytest
 
-from practices.errors import PracticesError
-from practices.model import ExtraFile, Skill
-from practices.skill_reader import read_skill_list
+from practices.error.practices_error import PracticesError
+from practices.masters.masters_model import ExtraFile, Skill
+from practices.masters.skill_reader import read_skill_list
 from tests.helpers import write_skill
 
 

@@ -18,7 +18,7 @@ package = false
 
 [tool.ruff]
 line-length = 120
-extend-exclude = ["generated"]
+extend-exclude = ["./generated"]
 
 [tool.ruff.lint]
 # E, F and I catch errors and keep imports tidy; B, UP, PTH, ARG and RUF add likely

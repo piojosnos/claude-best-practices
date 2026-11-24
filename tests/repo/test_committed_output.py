@@ -7,12 +7,12 @@ from pathlib import Path
 
 import pytest
 
-from practices.check import find_drift
-from practices.cli import REPO_DIR
-from practices.output import GENERATED_FOLDER
-from practices.profiles import AGENT_PROFILE_LIST
-from practices.reader import read_masters
-from practices.skill_reader import SKILL_FILE_NAME
+from practices.command.command_runner import REPO_DIR
+from practices.generated.drift_finder import find_drift
+from practices.generated.generated_folder import GENERATED_FOLDER
+from practices.masters.masters_reader import read_masters
+from practices.masters.skill_reader import SKILL_FILE_NAME
+from practices.rendering.agent_profile import AGENT_PROFILE_LIST
 from tests.helpers import render_repo
 
 

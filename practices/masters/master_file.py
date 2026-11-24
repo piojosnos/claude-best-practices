@@ -1,10 +1,10 @@
 # --------------------------------------------------------------------------------
-# Master files: the plain-file checks every master reader shares
+# The master file: the plain-file checks every master reader shares
 # --------------------------------------------------------------------------------
 
 from pathlib import Path
 
-from practices.errors import PracticesError
+from practices.error.practices_error import PracticesError
 
 
 # --------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------------------
-# The renderer: the typed model through the agent templates to output files
+# The renderer: the typed masters through the agent templates to generated files
 # --------------------------------------------------------------------------------
 # Python passes the model to Jinja and builds no file format itself; the
 # differences between agents live in templates/<agent>/.
@@ -10,10 +10,11 @@ from pathlib import Path
 
 import jinja2
 
-from practices.errors import PracticesError
-from practices.model import Masters, OutputFile, Rule, Skill
-from practices.profiles import AGENT_PROFILE_LIST, AgentProfile
-from practices.skill_reader import SKILL_FILE_NAME
+from practices.error.practices_error import PracticesError
+from practices.generated.generated_file import GeneratedFile
+from practices.masters.masters_model import Masters, Rule, Skill
+from practices.masters.skill_reader import SKILL_FILE_NAME
+from practices.rendering.agent_profile import AGENT_PROFILE_LIST, AgentProfile
 
 
 # --------------------------------------------------------------------------------
@@ -73,44 +74,44 @@ def _escape_code_point(code_point: int) -> str:
 # Rendering every master
 # --------------------------------------------------------------------------------
 
-def render_all(masters: Masters, repo_dir: Path) -> dict[str, OutputFile]:
+def render_all(masters: Masters, repo_dir: Path) -> dict[str, GeneratedFile]:
     environment = _build_environment(repo_dir / _TEMPLATES_FOLDER)
-    output_by_path_map = {}
+    generated_file_by_path_map = {}
 
     for profile in AGENT_PROFILE_LIST:
         for rule in masters.rule_list:
-            output_by_path_map.update(_render_rule(environment, profile, rule))
+            generated_file_by_path_map.update(_render_rule(environment, profile, rule))
 
         for skill in masters.skill_list:
-            output_by_path_map.update(_render_skill(environment, profile, skill))
+            generated_file_by_path_map.update(_render_skill(environment, profile, skill))
 
-    return _sorted_by_path(output_by_path_map)
+    return _sorted_by_path(generated_file_by_path_map)
 
 
 # --------------------------------------------------------------------------------
 
-def _render_rule(environment: jinja2.Environment, profile: AgentProfile, rule: Rule) -> dict[str, OutputFile]:
-    output_path = f"{profile.name}/{profile.rule_folder}/{rule.name}{profile.rule_extension}"
+def _render_rule(environment: jinja2.Environment, profile: AgentProfile, rule: Rule) -> dict[str, GeneratedFile]:
+    generated_path = f"{profile.name}/{profile.rule_folder}/{rule.name}{profile.rule_extension}"
     value_by_name_map = {"rule": rule, "master_path": rule.master_path}
     rule_content = _render_template(environment, profile.rule_template, value_by_name_map)
 
-    return {output_path: OutputFile(rule_content, False)}
+    return {generated_path: GeneratedFile(rule_content, False)}
 
 
 # --------------------------------------------------------------------------------
 
-def _render_skill(environment: jinja2.Environment, profile: AgentProfile, skill: Skill) -> dict[str, OutputFile]:
+def _render_skill(environment: jinja2.Environment, profile: AgentProfile, skill: Skill) -> dict[str, GeneratedFile]:
     skill_path = f"{profile.name}/{profile.skill_folder}/{skill.name}"
     value_by_name_map = {"skill": skill, "master_path": skill.master_path}
     skill_content = _render_template(environment, profile.skill_template, value_by_name_map)
-    output_by_path_map = {f"{skill_path}/{SKILL_FILE_NAME}": OutputFile(skill_content, False)}
+    generated_file_by_path_map = {f"{skill_path}/{SKILL_FILE_NAME}": GeneratedFile(skill_content, False)}
 
     for extra_file in skill.extra_file_list:
-        output_by_path_map[f"{skill_path}/{extra_file.path}"] = OutputFile(
+        generated_file_by_path_map[f"{skill_path}/{extra_file.path}"] = GeneratedFile(
             extra_file.content, extra_file.executable
         )
 
-    return output_by_path_map
+    return generated_file_by_path_map
 
 
 # --------------------------------------------------------------------------------
@@ -127,10 +128,10 @@ def _render_template(environment: jinja2.Environment, template_name: str, value_
 
 # --------------------------------------------------------------------------------
 
-def _sorted_by_path(output_by_path_map: dict[str, OutputFile]) -> dict[str, OutputFile]:
+def _sorted_by_path(generated_file_by_path_map: dict[str, GeneratedFile]) -> dict[str, GeneratedFile]:
     sorted_map = {}
 
-    for output_path in sorted(output_by_path_map):
-        sorted_map[output_path] = output_by_path_map[output_path]
+    for generated_path in sorted(generated_file_by_path_map):
+        sorted_map[generated_path] = generated_file_by_path_map[generated_path]
 
     return sorted_map

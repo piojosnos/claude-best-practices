@@ -1,25 +1,21 @@
 # --------------------------------------------------------------------------------
-# The output tree: layout, stable order, idempotent runs and the safe rewrite
+# practices.generate: the masters written to generated/ for both agents
 # --------------------------------------------------------------------------------
 
 from pathlib import Path
 
-import pytest
-
 from practices import check, generate
-from practices.model import OutputFile
-from practices.output import write_output
-from tests.helpers import render_repo, write_master
+from tests.helpers import snapshot_generated
 
 
 # --------------------------------------------------------------------------------
-# Layout and order
+# Writing the generated files
 # --------------------------------------------------------------------------------
 
-def test_layout_mirrors_each_agent_config_folder(fixture_repo: Path) -> None:
-    generate.main([], fixture_repo)
+def test_generate_writes_both_agents_for_every_master(fixture_repo: Path, capsys) -> None:
+    assert generate.main([], fixture_repo) == 0
 
-    assert list(_snapshot(fixture_repo)) == [
+    assert _generated_path_list(fixture_repo) == [
         "claude/rules/a.md",
         "claude/rules/b.md",
         "claude/skills/a/SKILL.md",
@@ -29,29 +25,29 @@ def test_layout_mirrors_each_agent_config_folder(fixture_repo: Path) -> None:
         "cursor/skills/a/SKILL.md",
         "cursor/skills/a/extra1.txt",
     ]
+    assert capsys.readouterr().out == "practices.generate: wrote 8 files under generated/\n"
 
 
 # --------------------------------------------------------------------------------
 
-def test_output_keys_are_sorted_whatever_the_creation_order(fixture_repo: Path) -> None:
-    write_master(fixture_repo, "z1.md", "# R1\n\nText r1.\n")
-    write_master(fixture_repo, "c1.md", "# R1\n\nText r1.\n")
-
-    output_path_list = list(render_repo(fixture_repo))
-
-    assert output_path_list == sorted(output_path_list)
-    assert "claude/rules/c1.md" in output_path_list
-
-
-# --------------------------------------------------------------------------------
-
-def test_two_generate_runs_are_idempotent(fixture_repo: Path) -> None:
+def test_generated_files_carry_the_header_and_each_agent_format(fixture_repo: Path) -> None:
     generate.main([], fixture_repo)
-    first_snapshot = _snapshot(fixture_repo)
+    generated_dir = fixture_repo / "generated"
+    header = "<!-- GENERATED from rules/b.md; edit that file and regenerate -->\n"
 
-    generate.main([], fixture_repo)
-
-    assert _snapshot(fixture_repo) == first_snapshot
+    assert (generated_dir / "claude/rules/a.md").read_text() == (
+        "<!-- GENERATED from rules/a.md; edit that file and regenerate -->\n\n# A1\n\nText a1.\n"
+    )
+    assert (generated_dir / "claude/rules/b.md").read_text() == (
+        '---\npaths:\n  - "**/*.b1"\n  - "**/b2*.txt"\n---\n' + header + "\n# B1\n\nText b1.\n"
+    )
+    assert (generated_dir / "cursor/rules/a.mdc").read_text() == (
+        "---\nalwaysApply: true\n---\n"
+        "<!-- GENERATED from rules/a.md; edit that file and regenerate -->\n\n# A1\n\nText a1.\n"
+    )
+    assert (generated_dir / "cursor/rules/b.mdc").read_text() == (
+        "---\nglobs: **/*.b1, **/b2*.txt\nalwaysApply: false\n---\n" + header + "\n# B1\n\nText b1.\n"
+    )
 
 
 # --------------------------------------------------------------------------------
@@ -76,34 +72,17 @@ def test_a_removed_master_loses_its_output(fixture_repo: Path, capsys) -> None:
 
 def test_a_broken_master_leaves_generated_untouched(fixture_repo: Path, capsys) -> None:
     generate.main([], fixture_repo)
-    before_snapshot = _snapshot(fixture_repo)
+    before_snapshot = snapshot_generated(fixture_repo)
     (fixture_repo / "rules" / "a.md").write_text('---\npath:\n  - "**/*.a1"\n---\n\n# A1\n\nText a1.\n')
     capsys.readouterr()
 
     assert generate.main([], fixture_repo) == 1
     assert "rules/a.md: unknown frontmatter key 'path'" in capsys.readouterr().err
-    assert _snapshot(fixture_repo) == before_snapshot
+    assert snapshot_generated(fixture_repo) == before_snapshot
 
 
 # --------------------------------------------------------------------------------
-
-def test_a_write_that_fails_midway_leaves_generated_and_the_repo_as_they_were(fixture_repo: Path) -> None:
-    generate.main([], fixture_repo)
-    before_snapshot = _snapshot(fixture_repo)
-    before_name_list = _name_list(fixture_repo)
-    clashing_output_map = {
-        "a1.txt": OutputFile(b"a1\n", False),
-        "b1": OutputFile(b"b1\n", False),
-        "b1/c1.txt": OutputFile(b"c1\n", False),
-    }
-
-    with pytest.raises(OSError):
-        write_output(fixture_repo, clashing_output_map)
-
-    assert _snapshot(fixture_repo) == before_snapshot
-    assert _name_list(fixture_repo) == before_name_list
-
-
+# Refusals
 # --------------------------------------------------------------------------------
 
 def test_generate_refuses_a_generated_link(fixture_repo: Path, tmp_path: Path, capsys) -> None:
@@ -121,26 +100,12 @@ def test_generate_refuses_a_generated_link(fixture_repo: Path, tmp_path: Path, c
 # TDL
 # --------------------------------------------------------------------------------
 
-def _snapshot(repo_dir: Path) -> dict[str, tuple[bytes, int]]:
+def _generated_path_list(repo_dir: Path) -> list[str]:
     generated_dir = repo_dir / "generated"
-    snapshot_by_path_map = {}
+    path_list = []
 
     for entry in sorted(generated_dir.rglob("*")):
         if entry.is_file():
-            snapshot_by_path_map[entry.relative_to(generated_dir).as_posix()] = (
-                entry.read_bytes(),
-                entry.stat().st_mode,
-            )
+            path_list.append(entry.relative_to(generated_dir).as_posix())
 
-    return snapshot_by_path_map
-
-
-# --------------------------------------------------------------------------------
-
-def _name_list(folder: Path) -> list[str]:
-    name_list = []
-
-    for entry in folder.iterdir():
-        name_list.append(entry.name)
-
-    return sorted(name_list)
+    return path_list

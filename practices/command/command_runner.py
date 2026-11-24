@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------------------
-# What every practices command shares: refusals, usage errors and the exit codes
+# Running a practices command: refusals, usage errors and the exit codes
 # --------------------------------------------------------------------------------
 # A refusal prints "<command>: <text>" on stderr and exits 1; a usage error
 # prints one "Usage:" line on stderr and exits 2. An OS error is a refusal too,
@@ -10,14 +10,15 @@ import sys
 from collections.abc import Callable
 from pathlib import Path
 
-from practices.errors import PracticesError, UsageError
+from practices.command.usage_error import UsageError
+from practices.error.practices_error import PracticesError
 
 
 # --------------------------------------------------------------------------------
 # Constants
 # --------------------------------------------------------------------------------
 
-REPO_DIR = Path(__file__).resolve().parent.parent
+REPO_DIR = Path(__file__).resolve().parent.parent.parent
 _USAGE_EXIT_CODE = 2
 _REFUSAL_EXIT_CODE = 1
 _INTERRUPT_EXIT_CODE = 130
@@ -25,12 +26,6 @@ _INTERRUPT_EXIT_CODE = 130
 
 # --------------------------------------------------------------------------------
 # Running a command
-# --------------------------------------------------------------------------------
-
-def _print_notice(command_name: str, text: str) -> None:
-    print(f"{command_name}: {text}", file=sys.stderr)
-
-
 # --------------------------------------------------------------------------------
 
 def run_command(command_name: str, action: Callable[[], None]) -> int:
@@ -55,3 +50,9 @@ def run_command(command_name: str, action: Callable[[], None]) -> int:
         return _INTERRUPT_EXIT_CODE
 
     return 0
+
+
+# --------------------------------------------------------------------------------
+
+def _print_notice(command_name: str, text: str) -> None:
+    print(f"{command_name}: {text}", file=sys.stderr)

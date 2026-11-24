@@ -7,10 +7,10 @@
 
 from pathlib import Path
 
-from practices.errors import PracticesError
-from practices.frontmatter import check_keys, split_frontmatter
-from practices.master_files import read_text, refuse_link
-from practices.model import Rule
+from practices.error.practices_error import PracticesError
+from practices.masters.frontmatter_parser import check_keys, split_frontmatter
+from practices.masters.master_file import read_text, refuse_link
+from practices.masters.masters_model import Rule
 
 
 # --------------------------------------------------------------------------------

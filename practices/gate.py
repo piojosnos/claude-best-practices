@@ -11,8 +11,9 @@ import sys
 from functools import partial
 from pathlib import Path
 
-from practices.cli import REPO_DIR, run_command
-from practices.errors import PracticesError, UsageError
+from practices.command.command_runner import REPO_DIR, run_command
+from practices.command.usage_error import UsageError
+from practices.error.practices_error import PracticesError
 
 
 # --------------------------------------------------------------------------------
@@ -31,6 +32,16 @@ _GATE_STEP_LIST = [
 # The command
 # --------------------------------------------------------------------------------
 
+def main(
+    argument_list: list[str],
+    repo_dir: Path = REPO_DIR,
+    step_list: list[tuple[str, list[str]]] = _GATE_STEP_LIST,
+) -> int:
+    return run_command(_COMMAND_NAME, partial(_run_gate, argument_list, repo_dir, step_list))
+
+
+# --------------------------------------------------------------------------------
+
 def _run_gate(argument_list: list[str], repo_dir: Path, step_list: list[tuple[str, list[str]]]) -> None:
     if argument_list:
         raise UsageError("")
@@ -42,16 +53,6 @@ def _run_gate(argument_list: list[str], repo_dir: Path, step_list: list[tuple[st
             raise PracticesError(f"{step_name} failed")
 
     print(f"{_COMMAND_NAME}: every step passed")
-
-
-# --------------------------------------------------------------------------------
-
-def main(
-    argument_list: list[str],
-    repo_dir: Path = REPO_DIR,
-    step_list: list[tuple[str, list[str]]] = _GATE_STEP_LIST,
-) -> int:
-    return run_command(_COMMAND_NAME, partial(_run_gate, argument_list, repo_dir, step_list))
 
 
 # --------------------------------------------------------------------------------

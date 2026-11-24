@@ -1,11 +1,11 @@
 # --------------------------------------------------------------------------------
-# Frontmatter: the split of a master's text and the strict YAML block
+# The frontmatter parser: the split of a master's text and the strict YAML block
 # --------------------------------------------------------------------------------
 
 import pytest
 
-from practices.errors import PracticesError
-from practices.frontmatter import split_frontmatter
+from practices.error.practices_error import PracticesError
+from practices.masters.frontmatter_parser import split_frontmatter
 
 
 BROKEN_FRONTMATTER_LIST = [
