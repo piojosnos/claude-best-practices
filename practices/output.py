@@ -38,13 +38,17 @@ def write_output(repo_dir: Path, output_by_path_map: dict[str, OutputFile]) -> N
 
 
 def _check_generated_dir(repo_dir: Path, generated_dir: Path) -> None:
-    if generated_dir.is_symlink():
-        raise PracticesError(f"{GENERATED_FOLDER} is a link; refusing to delete it")
+    _refuse_generated_link(generated_dir)
 
     if generated_dir.resolve() != repo_dir.resolve() / GENERATED_FOLDER:
         raise PracticesError(
             f"{GENERATED_FOLDER} does not resolve to {repo_dir / GENERATED_FOLDER}; refusing to delete it"
         )
+
+
+def _refuse_generated_link(generated_dir: Path) -> None:
+    if generated_dir.is_symlink():
+        raise PracticesError(f"{GENERATED_FOLDER} is a link; {GENERATED_FOLDER}/ must be a plain folder")
 
 
 def _write_file(target: Path, output_file: OutputFile) -> None:
@@ -60,6 +64,8 @@ def _write_file(target: Path, output_file: OutputFile) -> None:
 def read_output_tree(repo_dir: Path) -> dict[str, OutputFile]:
     generated_dir = repo_dir / GENERATED_FOLDER
     output_by_path_map = {}
+
+    _refuse_generated_link(generated_dir)
 
     if not generated_dir.is_dir():
         return output_by_path_map

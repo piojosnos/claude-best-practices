@@ -113,6 +113,21 @@ def test_check_refuses_a_link_under_generated(fixture_repo: Path, capsys) -> Non
     assert "generated/claude/rules/l1.md is a link" in capsys.readouterr().err
 
 
+def test_check_refuses_generated_when_it_is_a_link(fixture_repo: Path, capsys) -> None:
+    generate.main([], fixture_repo)
+    capsys.readouterr()
+
+    (fixture_repo / "generated").rename(fixture_repo / "real_gen1")
+    (fixture_repo / "generated").symlink_to(fixture_repo / "real_gen1")
+
+    assert check.main([], fixture_repo) == 1
+
+    captured = capsys.readouterr()
+
+    assert captured.out == ""
+    assert "generated is a link" in captured.err
+
+
 def test_check_without_generated_names_every_expected_file_as_missing(fixture_repo: Path, capsys) -> None:
     assert check.main([], fixture_repo) == 1
 
