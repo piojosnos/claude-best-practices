@@ -13,9 +13,11 @@ merges.
 
 ## Steps
 
-1. Find the clone. Resolve this skill file's link (for example with `realpath`) and
-   take the repository root with `git rev-parse --show-toplevel`. Work there. If the
-   clone cannot be found, say so and stop.
+1. Find the clone. Resolve this skill file's link (for example with `realpath`), then
+   take the root from the resolved file's own folder:
+   `git -C "$(dirname "$(realpath <this file>)")" rev-parse --show-toplevel`. Without
+   `-C`, git answers for the current folder, which is the user's project. Work in the
+   clone. If it cannot be found, say so and stop.
 
 2. Start clean and current. The worktree must be clean; if it is not, show what is
    changed and ask. Run `git fetch origin`, then create `chore/<desc>` (or `feat/` or

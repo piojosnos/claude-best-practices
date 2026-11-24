@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Where the practices live
 
-- The standing rules and skills live in one git repository, the best-practices clone. To find it from this rule, resolve this file's link (for example with `realpath`) and take the repository root with `git rev-parse --show-toplevel`.
+- The standing rules and skills live in one git repository, the best-practices clone. To find it from this rule, resolve this file's link (for example with `realpath`), then ask git for the root from the resolved file's own folder: `git -C "$(dirname "$(realpath <this file>)")" rev-parse --show-toplevel`. Without `-C`, git answers for the current folder, which is the user's project.
 - The masters are the only source: `rules/<name>.md` and `skills/<name>/SKILL.md`. Each agent loads its own copy from `generated/<agent>/`, which a generator renders from the masters. Never edit `generated/`; the drift check fails on a hand edit and the next run overwrites it.
 - To answer a question about the practices, read the masters.
 - To change, add or remove a practice, use the `update-practice` skill.

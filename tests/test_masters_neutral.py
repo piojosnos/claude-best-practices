@@ -50,7 +50,7 @@ def test_no_master_names_an_agent_path_or_tool() -> None:
 def test_the_best_practices_rule_points_at_the_masters_and_the_update_skill() -> None:
     text = (REPO_DIR / BEST_PRACTICES_RULE).read_text(encoding="utf-8")
 
-    for expected_text in ["update-practice", "generated/", "realpath", "git rev-parse --show-toplevel"]:
+    for expected_text in ["update-practice", "generated/"]:
         assert expected_text in text
 
 
@@ -59,6 +59,19 @@ def test_the_best_practices_rule_names_no_absolute_path() -> None:
 
     assert "`/" not in text
     assert "~/" not in text
+
+
+def test_finding_the_clone_names_the_folder_git_must_run_in() -> None:
+    problem_list = []
+
+    for master_file in _master_file_list():
+        text = master_file.read_text(encoding="utf-8")
+
+        for line in text.split("\n"):
+            if "rev-parse --show-toplevel" in line and "git -C" not in line:
+                problem_list.append(f"{master_file.relative_to(REPO_DIR).as_posix()}: {line.strip()}")
+
+    assert problem_list == []
 
 
 # --------------------------------------------------------------------------------
