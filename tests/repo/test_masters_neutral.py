@@ -1,7 +1,7 @@
 # --------------------------------------------------------------------------------
 # The masters stay agent-neutral: no agent path, tool or command syntax
 # --------------------------------------------------------------------------------
-# CLAUDE.md is not forbidden: the pr-reply skill names it next to AGENTS.md on purpose.
+# CLAUDE.md is not forbidden: the bp-pr-reply skill names it next to AGENTS.md on purpose.
 # --------------------------------------------------------------------------------
 
 from pathlib import Path
@@ -20,7 +20,7 @@ FORBIDDEN_TEXT_LIST = [
     "/gsd-",
     "/home/",
 ]
-BEST_PRACTICES_RULE = "rules/best-practices.md"
+BEST_PRACTICES_RULE = "rules/bp-best-practices.md"
 
 
 # --------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ def test_the_master_walk_skips_hidden_and_binary_files(fixture_repo: Path) -> No
 def test_the_best_practices_rule_points_at_the_masters_and_the_update_skill() -> None:
     text = (REPO_DIR / BEST_PRACTICES_RULE).read_text(encoding="utf-8")
 
-    for expected_text in ["update-practice", "generated/"]:
+    for expected_text in ["bp-update-practice", "generated/"]:
         assert expected_text in text
 
 
