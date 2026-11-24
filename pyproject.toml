@@ -1,0 +1,19 @@
+# The generator and its tests run through "uv run --locked", so a stale uv.lock
+# fails instead of being rewritten.
+
+[project]
+name = "practices-generator"
+version = "0"
+requires-python = ">=3.12"
+dependencies = ["jinja2==3.1.6", "pyyaml==6.0.3"]
+
+[dependency-groups]
+dev = ["pytest==9.2.0"]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-p no:cacheprovider"
