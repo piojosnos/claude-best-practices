@@ -62,6 +62,13 @@ Applies to every language. In brace languages it looks like the bullets below; i
 - Lean on the language or framework's standard codegen or idiom instead of re-implementing boilerplate by hand; keep it consistent across the codebase.
 - Wrap domain values that have their own equality, ordering or parsing rules in a type; do not pass them around as bare strings.
 
+## No magic literals
+
+- Name a literal that carries meaning (a key, a status, a limit, a file name) as a constant, so its meaning and every use are one search away.
+- Declare the constant in the narrowest scope that uses it: the class, not a shared constants file. A value that only some temporary special case needs stays private to that code and leaves with it.
+- In tests, name fixture values too, and prefer abstract ones (`kind1`, `kind2`) unless the test is about that exact value.
+- Exceptions: `0`, `1` and the empty string, when their meaning is plain where they appear.
+
 ## No duplicated utility code
 
 - Extract to a helper at three or more duplicates. Two hand-rolled copies is tolerable; the third should consolidate.
